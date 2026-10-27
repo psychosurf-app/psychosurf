@@ -1,11 +1,19 @@
-/* Base styles. Telegram passes its theme colors as CSS variables; we fall back to light defaults. */
+/* Brand palette sampled from Yana's mockups (G-2). */
 :root {
-  --bg: var(--tg-theme-bg-color, #ffffff);
-  --text: var(--tg-theme-text-color, #1b1b1f);
-  --hint: var(--tg-theme-hint-color, #8a8a93);
+  --bg: #c4c7ca;
+  --text: #111111;
+  --text-soft: #3d3f42;
+  --hint: #5f6266;
+  --grid: #b1b5b9;
+  --teal: #076a65;
+  --orange: #e0602b;
+  --purple: #6a5ae0;
+  --btn: #111111;
+  --btn-text: #ffffff;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   color: var(--text);
   background: var(--bg);
+  -webkit-font-smoothing: antialiased;
 }
 
 * {
@@ -19,7 +27,7 @@ body {
 }
 
 .screen {
-  padding: 24px 16px;
+  padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
   max-width: 480px;
   margin: 0 auto;
 }
@@ -32,4 +40,120 @@ h1 {
 .hint {
   color: var(--hint);
   font-size: 14px;
+}
+
+/* Buttons */
+.btn-primary {
+  width: 100%;
+  padding: 18px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--btn);
+  color: var(--btn-text);
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-link {
+  display: block;
+  margin: 16px auto 0;
+  padding: 4px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 17px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+/* Welcome screen */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.welcome-logo {
+  display: block;
+  width: 62%;
+  max-width: 260px;
+  margin: 8px auto 24px;
+}
+
+.wave-decor {
+  display: block;
+  width: calc(100% + 32px);
+  height: 130px;
+  margin: 0 -16px;
+}
+
+.wave-grid {
+  stroke: var(--grid);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin: 20px 0 24px;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-any {
+  padding: 3px 8px;
+  border: 1.5px dashed var(--hint);
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.welcome-title {
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 800;
+  margin: 0 0 12px;
+}
+
+.accent {
+  color: var(--teal);
+}
+
+.welcome-subtitle {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--text-soft);
+}
+
+.welcome-actions {
+  margin-top: auto;
+  padding-top: 32px;
+  text-align: center;
+}
+
+.raccoon-peek {
+  display: block;
+  width: 96px;
+  margin: 0 12% -6px auto;
 }

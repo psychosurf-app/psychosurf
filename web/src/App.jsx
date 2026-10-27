@@ -1,14 +1,28 @@
-import { isInTelegram } from './telegram.js';
+import { useState } from 'react';
+import Welcome from './screens/Welcome.jsx';
 
-// Placeholder welcome screen. Final texts and the raccoon come from Yana's screens (I-10).
+// Simple screen switcher. A real router comes when there are more screens.
 export default function App() {
+  const [screen, setScreen] = useState('welcome');
+
+  if (screen === 'welcome') {
+    return (
+      <Welcome
+        onStart={() => setScreen('start')}
+        onHowItWorks={() => setScreen('how')}
+      />
+    );
+  }
+
+  // Placeholders until the next screens are built.
+  const titles = { start: 'Выбор спорта', how: 'Как это работает' };
   return (
     <main className="screen">
-      <h1>Салют, психосёрфик!</h1>
-      <p>Дневник состояния после тренировок.</p>
-      <p className="hint">
-        {isInTelegram ? 'Открыто в Telegram' : 'Открыто в браузере'}
-      </p>
+      <h1>{titles[screen]}</h1>
+      <p className="hint">Этот экран появится следующим шагом.</p>
+      <button type="button" className="btn-link" onClick={() => setScreen('welcome')}>
+        ← Назад
+      </button>
     </main>
   );
 }
