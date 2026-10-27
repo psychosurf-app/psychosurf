@@ -74,6 +74,7 @@ export default function App() {
     return (
       <EntryFlow
         diary={currentDiary}
+        diaryEntries={entries.filter((e) => e.diaryKey === currentDiary.key)}
         onCancel={goProfile}
         onNothing={() => showPlaceholder('Точно ничего?')}
         onSave={(entry) => {

@@ -2,11 +2,12 @@ import { useState } from 'react';
 import raccoonPeek from '../assets/raccoon-peek.png';
 import StepHeader from '../components/StepHeader.jsx';
 import { OptionChips, OtherOptions, NoteField } from '../components/OptionPicker.jsx';
+import { DateChip, DateSheet } from '../components/DatePicker.jsx';
 import { optionsOfKind } from '../data/options.js';
 import { todayIso } from '../lib/format.js';
 
 // Training entry in 3 steps (decision R-27, mockups G-5, G-6, G-7, G-10 to G-12, G-14).
-// Not yet here: "nothing" flow (G-13) and date choice (G-17) — next step.
+// Date choice on step 1 (I-29, G-17). Not yet here: "nothing" flow (G-13), waits for V-21.
 
 const EMOTION_GROUPS = {
   good: { main: 'E+', other: 'E-', mainTitle: 'Приятное', otherTitle: 'Непростое' },
@@ -21,8 +22,10 @@ const MOTIVATION_GROUPS = {
 const toggleIn = (list, code) =>
   list.includes(code) ? list.filter((c) => c !== code) : [...list, code];
 
-export default function EntryFlow({ diary, onCancel, onNothing, onSave }) {
+export default function EntryFlow({ diary, diaryEntries, onCancel, onNothing, onSave }) {
   const [step, setStep] = useState(1);
+  const [trainingDate, setTrainingDate] = useState(todayIso());
+  const [dateOpen, setDateOpen] = useState(false);
   const [tone, setTone] = useState(null);
   const [emotions, setEmotions] = useState([]);
   const [emotionNote, setEmotionNote] = useState('');
@@ -39,7 +42,7 @@ export default function EntryFlow({ diary, onCancel, onNothing, onSave }) {
     onSave({
       id: crypto.randomUUID(),
       diaryKey: diary.key,
-      trainingDate: todayIso(),
+      trainingDate,
       createdAt: Date.now(),
       tone,
       emotions,
@@ -55,6 +58,7 @@ export default function EntryFlow({ diary, onCancel, onNothing, onSave }) {
     return (
       <main className="screen entry">
         <StepHeader sportName={diary.name} step={1} onBack={onCancel} />
+        <DateChip value={trainingDate} onClick={() => setDateOpen(true)} />
         <h1 className="page-title">Как ты сейчас, сразу после тренировки?</h1>
         <p className="page-text">
           Прислушайся к себе в первые минуты. Не вспоминай всю тренировку — только то, что
@@ -81,6 +85,18 @@ export default function EntryFlow({ diary, onCancel, onNothing, onSave }) {
             Ничего не чувствую
           </button>
         </div>
+
+        {dateOpen && (
+          <DateSheet
+            value={trainingDate}
+            markedDates={new Set(diaryEntries.map((e) => e.trainingDate))}
+            onClose={() => setDateOpen(false)}
+            onDone={(iso) => {
+              setTrainingDate(iso);
+              setDateOpen(false);
+            }}
+          />
+        )}
       </main>
     );
   }
