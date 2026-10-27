@@ -22,16 +22,17 @@ const MOTIVATION_GROUPS = {
 const toggleIn = (list, code) =>
   list.includes(code) ? list.filter((c) => c !== code) : [...list, code];
 
-export default function EntryFlow({ diary, diaryEntries, onCancel, onNothing, onSave }) {
+// `initial` — an existing entry to edit (pencil on G-15); empty for a new entry.
+export default function EntryFlow({ diary, diaryEntries, initial, onCancel, onNothing, onSave }) {
   const [step, setStep] = useState(1);
-  const [trainingDate, setTrainingDate] = useState(todayIso());
+  const [trainingDate, setTrainingDate] = useState(initial?.trainingDate ?? todayIso());
   const [dateOpen, setDateOpen] = useState(false);
-  const [tone, setTone] = useState(null);
-  const [emotions, setEmotions] = useState([]);
-  const [emotionNote, setEmotionNote] = useState('');
-  const [motivation, setMotivation] = useState(null);
-  const [motivationOptions, setMotivationOptions] = useState([]);
-  const [motivationNote, setMotivationNote] = useState('');
+  const [tone, setTone] = useState(initial?.tone ?? null);
+  const [emotions, setEmotions] = useState(initial?.emotions ?? []);
+  const [emotionNote, setEmotionNote] = useState(initial?.emotionNote ?? '');
+  const [motivation, setMotivation] = useState(initial?.motivation ?? null);
+  const [motivationOptions, setMotivationOptions] = useState(initial?.motivationOptions ?? []);
+  const [motivationNote, setMotivationNote] = useState(initial?.motivationNote ?? '');
 
   function pickTone(value) {
     setTone(value);
@@ -40,10 +41,10 @@ export default function EntryFlow({ diary, diaryEntries, onCancel, onNothing, on
 
   function save() {
     onSave({
-      id: crypto.randomUUID(),
+      id: initial?.id ?? crypto.randomUUID(),
       diaryKey: diary.key,
       trainingDate,
-      createdAt: Date.now(),
+      createdAt: initial?.createdAt ?? Date.now(),
       tone,
       emotions,
       emotionNote: emotionNote.trim(),

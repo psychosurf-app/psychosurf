@@ -956,3 +956,129 @@ h1 {
   font-size: 14px;
   color: var(--text-soft);
 }
+
+/* One training (G-15) */
+.training {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.icon-btn-flat {
+  align-self: center;
+  margin-top: 0;
+}
+
+.training-sport {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+
+.training-date {
+  margin: 2px 0 18px;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.bag-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 22px;
+  padding: 14px 20px;
+  border-radius: 22px;
+  background: var(--card);
+}
+
+.bag-caption {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+.bag-name {
+  margin: 2px 0 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.training-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 14px 0 10px;
+}
+
+.training-section-head h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.training-section-head span {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.chip-static {
+  cursor: default;
+}
+
+.training-note {
+  margin: 10px 0 0;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #d4d6d9;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-soft);
+}
+
+.training-bottom {
+  margin-top: auto;
+  padding-top: 32px;
+}
+
+.advice-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 18px;
+  border: 0;
+  border-radius: 24px;
+  background: var(--btn);
+  color: var(--btn-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.advice-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #2a2b2e;
+}
+
+.advice-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.advice-title {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.advice-sub {
+  font-size: 13px;
+  color: #c9cbce;
+}
