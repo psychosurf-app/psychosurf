@@ -288,3 +288,124 @@ h1 {
 .nowrap {
   white-space: nowrap;
 }
+
+/* Shared page headings for inner screens */
+.page-title {
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: 800;
+  margin: 0 0 12px;
+}
+
+.page-text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-soft);
+}
+
+/* Sport choice screen (G-8) */
+.sports {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 18px;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: var(--card);
+  color: var(--hint);
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 17px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.chip-on {
+  background: var(--btn);
+  color: var(--btn-text);
+  font-weight: 700;
+}
+
+.chip-add {
+  border: 1.5px dashed var(--hint);
+  background: none;
+  font-weight: 700;
+}
+
+.chip-add-form {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.chip-add-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 16px;
+  border: 1.5px dashed var(--hint);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  outline: none;
+}
+
+.chip-add-form button {
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--btn);
+  color: var(--btn-text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chip-add-form button:disabled,
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.sports-actions {
+  margin-top: auto;
+  padding-top: 40px;
+}
+
+.raccoon-left {
+  margin: 0 auto -6px 12%;
+}
