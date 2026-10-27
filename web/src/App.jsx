@@ -3,6 +3,7 @@ import Welcome from './screens/Welcome.jsx';
 import HowItWorks from './screens/HowItWorks.jsx';
 import SportChoice from './screens/SportChoice.jsx';
 import Profile from './screens/Profile.jsx';
+import EntryFlow from './screens/EntryFlow.jsx';
 import TopBar from './components/TopBar.jsx';
 import { isDemo, DEMO_DIARIES, DEMO_ENTRIES } from './lib/demo.js';
 
@@ -11,7 +12,8 @@ import { isDemo, DEMO_DIARIES, DEMO_ENTRIES } from './lib/demo.js';
 export default function App() {
   const [screen, setScreen] = useState(isDemo ? 'profile' : 'welcome');
   const [diaries, setDiaries] = useState(isDemo ? DEMO_DIARIES : []);
-  const [entries] = useState(isDemo ? DEMO_ENTRIES : []);
+  const [entries, setEntries] = useState(isDemo ? DEMO_ENTRIES : []);
+  const [currentDiary, setCurrentDiary] = useState(null);
   // Where "back" and "next" lead from the sport choice: onboarding or the profile.
   const [sportsFrom, setSportsFrom] = useState('welcome');
   const [placeholder, setPlaceholder] = useState('');
@@ -53,7 +55,10 @@ export default function App() {
       <Profile
         diaries={diaries}
         entries={entries}
-        onAddEntry={(d) => showPlaceholder(`Запись тренировки: ${d.name}`)}
+        onAddEntry={(d) => {
+          setCurrentDiary(d);
+          setScreen('entry');
+        }}
         onOpenDiary={(d) => showPlaceholder(`Дневник: ${d.name}`)}
         onAddSport={() => {
           setSportsFrom('profile');
@@ -61,6 +66,20 @@ export default function App() {
         }}
         onCompare={() => showPlaceholder('Сравнение видов спорта')}
         onSettings={() => showPlaceholder('Настройки')}
+      />
+    );
+  }
+
+  if (screen === 'entry') {
+    return (
+      <EntryFlow
+        diary={currentDiary}
+        onCancel={goProfile}
+        onNothing={() => showPlaceholder('Точно ничего?')}
+        onSave={(entry) => {
+          setEntries((list) => [...list, entry]);
+          setScreen('profile');
+        }}
       />
     );
   }

@@ -601,3 +601,212 @@ h1 {
   font-size: 28px;
   line-height: 1;
 }
+
+/* Entry flow (G-5 to G-14) */
+.entry {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.step-header {
+  margin-bottom: 28px;
+}
+
+.step-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+}
+
+.step-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+
+.step-bars {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.step-bars span {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--grid);
+}
+
+.step-bars span.on {
+  background: var(--text);
+}
+
+.entry-bottom {
+  margin-top: auto;
+  padding-top: 32px;
+}
+
+.tone-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 20px;
+  border: 0;
+  border-radius: 24px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tone-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tone-title {
+  display: block;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.tone-sub {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+.option-group {
+  margin-top: 22px;
+}
+
+.group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.group-title {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.collapse-btn {
+  margin-bottom: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-soft);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chips-small .chip {
+  padding: 8px 13px;
+  font-size: 14px;
+}
+
+.text-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 4px 2px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.text-action span {
+  width: 18px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.note {
+  margin-top: 20px;
+}
+
+.note-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.note-count {
+  font-weight: 400;
+  color: var(--text-soft);
+}
+
+.note textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--text);
+  border-radius: 16px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.4;
+  resize: none;
+  outline: none;
+}
+
+.note-private {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+.segmented {
+  display: flex;
+  gap: 4px;
+  margin: 22px 0 16px;
+  padding: 4px;
+  border-radius: 20px;
+  background: var(--card);
+}
+
+.segmented button {
+  flex: 1;
+  padding: 14px 8px;
+  border: 0;
+  border-radius: 16px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.segmented button.on {
+  background: var(--btn);
+  color: var(--btn-text);
+  font-weight: 700;
+}
