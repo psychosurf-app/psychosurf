@@ -1,5 +1,6 @@
 // Emotion / motivation chart of a diary (decision R-25, mockup G-16).
-// Points are evenly spaced by training (not by calendar day), values are -1..1.
+// By default points are evenly spaced by training; a series may pass `xs` (0..1) to place
+// points by calendar date instead (comparison G-18). Values are -1..1.
 
 const W = 340;
 const H = 220;
@@ -13,7 +14,7 @@ function monotonePath(pts) {
   const dx = [];
   const slope = [];
   for (let i = 0; i < n - 1; i += 1) {
-    dx.push(pts[i + 1][0] - pts[i][0]);
+    dx.push(Math.max(pts[i + 1][0] - pts[i][0], 0.01)); // guard against two points at one x
     slope.push((pts[i + 1][1] - pts[i][1]) / dx[i]);
   }
   const tangent = [slope[0]];
@@ -49,7 +50,11 @@ export default function WaveChart({ series }) {
       <rect x="0" y={H / 2} width={W} height={H / 2} className="band-minus" />
       <line x1="0" x2={W} y1={H / 2} y2={H / 2} className="chart-zero" />
       {series.map((s) => {
-        const pts = s.values.map((v, i) => [xOf(i, count), yOf(v)]);
+        const pts = s.values.map((v, i) => [
+          s.xs ? PAD_X + s.xs[i] * (W - 2 * PAD_X) : xOf(i, count),
+          yOf(v),
+        ]);
+        if (pts.length === 0) return null;
         return (
           <g key={s.name}>
             <path d={monotonePath(pts)} fill="none" stroke={s.color} strokeWidth="3.5" strokeLinecap="round" />

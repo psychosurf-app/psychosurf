@@ -6,6 +6,7 @@ import Profile from './screens/Profile.jsx';
 import EntryFlow from './screens/EntryFlow.jsx';
 import Training from './screens/Training.jsx';
 import Diary from './screens/Diary.jsx';
+import Compare from './screens/Compare.jsx';
 import TopBar from './components/TopBar.jsx';
 import { isDemo, DEMO_DIARIES, DEMO_ENTRIES } from './lib/demo.js';
 
@@ -75,7 +76,7 @@ export default function App() {
           setSportsFrom('profile');
           setScreen('sports');
         }}
-        onCompare={() => showPlaceholder('Сравнение видов спорта')}
+        onCompare={() => setScreen('compare')}
         onSettings={() => showPlaceholder('Настройки')}
       />
     );
@@ -132,6 +133,10 @@ export default function App() {
         }}
       />
     );
+  }
+
+  if (screen === 'compare') {
+    return <Compare diaries={diaries} entries={entries} onBack={goProfile} />;
   }
 
   // Placeholder for screens that are not built yet.

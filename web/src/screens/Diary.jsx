@@ -1,85 +1,20 @@
 import { useState } from 'react';
 import WaveChart from '../components/WaveChart.jsx';
 import CatchView from '../components/CatchView.jsx';
-import PeriodSheet from '../components/PeriodSheet.jsx';
+import PeriodChips from '../components/PeriodChips.jsx';
 import { useTelegramBackButton } from '../telegram.js';
 import { OPTION_BY_CODE } from '../data/options.js';
 import { BAGS, bagOf } from '../lib/bags.js';
-import { countText, todayIso } from '../lib/format.js';
+import { countText } from '../lib/format.js';
+import { describePeriod, inRange, shortDate } from '../lib/period.js';
 import { emotionPoint, motivationPoint, sortEntries } from '../lib/points.js';
 
 // Diary of one sport with charts, mockup G-16 v1 (ideas I-14, I-17, I-27).
 // Tabs "Графики" and "Улов" (G-4) share one period: week, month or custom (V-15).
 // Not yet here: analysis card (waits for Yana's phrases, V-16).
 
-const MONTHS = [
-  'Январь',
-  'Февраль',
-  'Март',
-  'Апрель',
-  'Май',
-  'Июнь',
-  'Июль',
-  'Август',
-  'Сентябрь',
-  'Октябрь',
-  'Ноябрь',
-  'Декабрь',
-];
-const MONTHS_SHORT = [
-  'янв',
-  'фев',
-  'мар',
-  'апр',
-  'мая',
-  'июн',
-  'июл',
-  'авг',
-  'сен',
-  'окт',
-  'ноя',
-  'дек',
-];
 const TRAININGS = ['тренировка', 'тренировки', 'тренировок'];
 const LIST_PREVIEW = 5;
-
-const shortDate = (iso) => {
-  const [, m, d] = iso.split('-').map(Number);
-  return `${d} ${MONTHS_SHORT[m - 1]}`;
-};
-
-function shiftIso(iso, days) {
-  const [y, m, d] = iso.split('-').map(Number);
-  const date = new Date(y, m - 1, d + days);
-  const pad = (x) => String(x).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-}
-
-// Entries in the chosen period, its title and the "за ..." phrase for the catch tab.
-function inPeriod(entries, period) {
-  const today = todayIso();
-  if (period.type === 'week') {
-    const from = shiftIso(today, -6);
-    return {
-      title: 'Неделя',
-      phrase: 'за неделю',
-      list: entries.filter((e) => e.trainingDate >= from),
-    };
-  }
-  if (period.type === 'custom') {
-    return {
-      title: `${shortDate(period.from)} — ${shortDate(period.to)}`,
-      phrase: `с ${shortDate(period.from)} по ${shortDate(period.to)}`,
-      list: entries.filter((e) => e.trainingDate >= period.from && e.trainingDate <= period.to),
-    };
-  }
-  const month = today.slice(0, 7);
-  return {
-    title: MONTHS[Number(today.slice(5, 7)) - 1],
-    phrase: 'за месяц',
-    list: entries.filter((e) => e.trainingDate.startsWith(month)),
-  };
-}
 
 const CHART_MODES = [
   ['emotions', 'Эмоции'],
@@ -91,12 +26,13 @@ export default function Diary({ diary, entries, onBack, onAddEntry, onOpenEntry 
   const telegramHandlesBack = useTelegramBackButton(onBack);
   const [tab, setTab] = useState('charts');
   const [period, setPeriod] = useState({ type: 'month' });
-  const [periodOpen, setPeriodOpen] = useState(false);
   const [mode, setMode] = useState('both');
   const [showAll, setShowAll] = useState(false);
 
   const sorted = sortEntries(entries);
-  const { title, phrase, list } = inPeriod(sorted, period);
+  const range = describePeriod(period);
+  const { title, phrase } = range;
+  const list = inRange(sorted, range);
   // "Nothing" entries sit at 0 on the emotion chart (R-25).
   const series = [];
   if (mode !== 'motivation')
@@ -176,40 +112,7 @@ export default function Diary({ diary, entries, onBack, onAddEntry, onOpenEntry 
         </>
       )}
 
-      <div className="chips">
-        {[
-          ['week', 'Неделя'],
-          ['month', 'Месяц'],
-        ].map(([value, label]) => (
-          <button
-            key={value}
-            type="button"
-            className={`chip chip-sm ${period.type === value ? 'chip-on' : ''}`}
-            onClick={() => setPeriod({ type: value })}
-          >
-            {label}
-          </button>
-        ))}
-        <button
-          type="button"
-          className={`chip chip-sm ${period.type === 'custom' ? 'chip-on' : ''}`}
-          onClick={() => setPeriodOpen(true)}
-        >
-          Свой период
-        </button>
-      </div>
-
-      {periodOpen && (
-        <PeriodSheet
-          from={period.from ?? shiftIso(todayIso(), -13)}
-          to={period.to ?? todayIso()}
-          onClose={() => setPeriodOpen(false)}
-          onDone={(from, to) => {
-            setPeriod({ type: 'custom', from, to });
-            setPeriodOpen(false);
-          }}
-        />
-      )}
+      <PeriodChips period={period} onChange={setPeriod} />
 
       {tab === 'catch' && <CatchView entries={list} />}
 

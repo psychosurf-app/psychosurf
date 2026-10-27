@@ -1454,3 +1454,80 @@ h1 {
   font-size: 14px;
   color: #c2481c;
 }
+
+/* Sport comparison (G-18) */
+.cmp-sub {
+  margin-bottom: 16px;
+}
+
+.cmp-card-title {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--grid);
+}
+
+.cmp-sport {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--grid);
+}
+
+.cmp-sport:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.cmp-sport-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 19px;
+}
+
+.cmp-few {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+.cmp-bar-row {
+  display: grid;
+  grid-template-columns: 82px 1fr 64px;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.cmp-bar-label {
+  line-height: 1.2;
+  color: var(--text-soft);
+}
+
+.cmp-bar-track {
+  height: 10px;
+  border-radius: 5px;
+  background: #d4d6d9;
+  overflow: hidden;
+}
+
+.cmp-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 5px;
+}
+
+.cmp-bar-value {
+  text-align: right;
+  font-weight: 800;
+}
+
+.cmp-legend {
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 16px;
+  border-bottom: 0;
+}
+
+.cmp-raccoon {
+  margin-top: 16px;
+}
