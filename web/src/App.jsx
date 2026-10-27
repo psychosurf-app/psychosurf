@@ -130,7 +130,6 @@ export default function App() {
           setReturnTo('diary');
           setScreen('training');
         }}
-        onCustomPeriod={() => showPlaceholder('Свой период')}
       />
     );
   }

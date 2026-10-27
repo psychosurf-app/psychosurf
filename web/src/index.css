@@ -1301,3 +1301,156 @@ h1 {
   font-size: 24px;
   color: var(--text-soft);
 }
+
+/* Catch tab (G-4) */
+.catch-title {
+  margin: 4px 0 4px;
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.catch-sub {
+  margin-bottom: 14px;
+}
+
+.catch {
+  margin-top: 8px;
+}
+
+.catch-scene {
+  position: relative;
+  padding-top: 24px;
+}
+
+.catch-raccoon {
+  display: block;
+  width: 100%;
+}
+
+.catch-bags {
+  position: absolute;
+  left: 22%;
+  right: 0;
+  bottom: 22px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.big-bag {
+  width: 100%;
+  height: auto;
+}
+
+.big-bag-num {
+  font-size: 34px;
+  font-weight: 800;
+  fill: #111;
+  paint-order: stroke;
+  stroke: #f2f2f2;
+  stroke-width: 6px;
+}
+
+.catch-board {
+  display: block;
+  width: 82%;
+  height: 34px;
+  margin: -8px 0 0 auto;
+}
+
+.catch-labels {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin: 18px 0 0 22%;
+  text-align: center;
+  font-size: 13px;
+}
+
+.catch-labels > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.catch-labels strong {
+  line-height: 1.2;
+}
+
+.catch-labels span:last-child {
+  color: var(--text-soft);
+}
+
+.bag-legend {
+  margin-top: 22px;
+  padding: 16px 18px;
+  border-radius: 22px;
+  background: var(--card);
+}
+
+.bag-legend-head {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.bag-legend ul {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bag-legend li {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.bag-legend li .dot {
+  flex: none;
+  margin-top: 6px;
+}
+
+/* Custom period sheet */
+.period-fields {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.period-fields label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+
+.period-fields input {
+  padding: 12px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+}
+
+.period-error {
+  margin: -6px 0 12px;
+  font-size: 14px;
+  color: #c2481c;
+}
