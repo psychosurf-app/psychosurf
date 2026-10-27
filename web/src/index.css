@@ -157,3 +157,134 @@ h1 {
   width: 96px;
   margin: 0 12% -6px auto;
 }
+
+/* Top bar of inner screens */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  margin-bottom: 12px;
+}
+
+.back-btn {
+  display: flex;
+  margin-left: -6px;
+  padding: 4px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.top-logo {
+  width: 56px;
+}
+
+/* How it works screen (G-3) */
+:root {
+  --card: #e6e8ea;
+}
+
+.how {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.how-title {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 14px;
+}
+
+.how-lead {
+  margin: 0 0 14px;
+  font-size: 19px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.how-text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-soft);
+}
+
+.how-card {
+  position: relative;
+  margin-top: 52px;
+  padding: 22px 20px 8px;
+  border-radius: 24px;
+  background: var(--card);
+}
+
+.how-card-raccoon {
+  position: absolute;
+  top: -44px;
+  right: 30px;
+  width: 80px;
+}
+
+.how-card h2 {
+  margin: 0 0 18px;
+  font-size: 19px;
+}
+
+.how-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.how-steps li {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 18px;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.step-num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  font-weight: 700;
+}
+
+.how-tip {
+  display: flex;
+  gap: 14px;
+  margin: 22px 0 0;
+  padding: 0 4px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-soft);
+}
+
+.how-tip svg {
+  flex: none;
+  color: var(--teal);
+}
+
+.how-actions {
+  margin-top: auto;
+  padding-top: 28px;
+  text-align: center;
+}
+
+.how-cta {
+  margin: 0 0 14px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
