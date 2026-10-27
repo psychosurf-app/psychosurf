@@ -5,6 +5,7 @@ import SportChoice from './screens/SportChoice.jsx';
 import Profile from './screens/Profile.jsx';
 import EntryFlow from './screens/EntryFlow.jsx';
 import Training from './screens/Training.jsx';
+import Diary from './screens/Diary.jsx';
 import TopBar from './components/TopBar.jsx';
 import { isDemo, DEMO_DIARIES, DEMO_ENTRIES } from './lib/demo.js';
 
@@ -17,6 +18,8 @@ export default function App() {
   const [currentDiary, setCurrentDiary] = useState(null);
   const [currentEntryId, setCurrentEntryId] = useState(null);
   const [editing, setEditing] = useState(false);
+  // Screen to return to from an entry or a training: 'profile' or 'diary'.
+  const [returnTo, setReturnTo] = useState('profile');
   // Where "back" and "next" lead from the sport choice: onboarding or the profile.
   const [sportsFrom, setSportsFrom] = useState('welcome');
   const [placeholder, setPlaceholder] = useState('');
@@ -61,9 +64,13 @@ export default function App() {
         onAddEntry={(d) => {
           setCurrentDiary(d);
           setEditing(false);
+          setReturnTo('profile');
           setScreen('entry');
         }}
-        onOpenDiary={(d) => showPlaceholder(`Дневник: ${d.name}`)}
+        onOpenDiary={(d) => {
+          setCurrentDiary(d);
+          setScreen('diary');
+        }}
         onAddSport={() => {
           setSportsFrom('profile');
           setScreen('sports');
@@ -80,7 +87,7 @@ export default function App() {
         diary={currentDiary}
         diaryEntries={entries.filter((e) => e.diaryKey === currentDiary.key)}
         initial={editing ? entries.find((e) => e.id === currentEntryId) : null}
-        onCancel={() => setScreen(editing ? 'training' : 'profile')}
+        onCancel={() => setScreen(editing ? 'training' : returnTo)}
         onNothing={() => showPlaceholder('Точно ничего?')}
         onSave={(entry) => {
           // New entry is added; an edited one replaces the old version.
@@ -97,12 +104,33 @@ export default function App() {
       <Training
         diary={currentDiary}
         entry={entries.find((e) => e.id === currentEntryId)}
-        onBack={goProfile}
+        onBack={() => setScreen(returnTo)}
         onEdit={() => {
           setEditing(true);
           setScreen('entry');
         }}
         onAdvice={() => showPlaceholder('Совет психолога — в релизе 2')}
+      />
+    );
+  }
+
+  if (screen === 'diary') {
+    return (
+      <Diary
+        diary={currentDiary}
+        entries={entries.filter((e) => e.diaryKey === currentDiary.key)}
+        onBack={goProfile}
+        onAddEntry={() => {
+          setEditing(false);
+          setReturnTo('diary');
+          setScreen('entry');
+        }}
+        onOpenEntry={(e) => {
+          setCurrentEntryId(e.id);
+          setReturnTo('diary');
+          setScreen('training');
+        }}
+        onCustomPeriod={() => showPlaceholder('Свой период')}
       />
     );
   }
