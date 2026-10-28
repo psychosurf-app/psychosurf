@@ -26,6 +26,30 @@ export function getInitData() {
   return isInTelegram ? webApp.initData : '';
 }
 
+// Telegram CloudStorage: a small key-value store per user, kept by Telegram
+// and synced across the user's devices. Limits: up to 1024 keys, key up to
+// 128 chars (A-Z a-z 0-9 _ -), value up to 4096 chars. Needs Telegram 6.9+.
+// Null outside Telegram or in old Telegram versions.
+const rawCloud =
+  isInTelegram && webApp.isVersionAtLeast?.('6.9') ? webApp.CloudStorage : null;
+
+// Turns Telegram's callback style (error, result) into a promise.
+const call = (method, ...args) =>
+  new Promise((resolve, reject) => {
+    rawCloud[method](...args, (error, result) => {
+      if (error) reject(new Error(`CloudStorage.${method}: ${error}`));
+      else resolve(result);
+    });
+  });
+
+// Same four functions as the browser store in storage/browserStore.js.
+export const cloudStorage = rawCloud && {
+  getKeys: () => call('getKeys'),
+  getItems: (keys) => call('getItems', keys),
+  setItem: (key, value) => call('setItem', key, value),
+  removeItem: (key) => call('removeItem', key),
+};
+
 // Show Telegram's native back button while a screen is open.
 // Returns true if Telegram handles "back", so the screen can hide its own arrow.
 export function useTelegramBackButton(onBack) {

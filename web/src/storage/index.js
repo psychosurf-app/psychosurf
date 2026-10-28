@@ -8,6 +8,9 @@
 // are both async, so screens are written for that from day one.
 
 import { createMemoryAdapter } from './memoryAdapter.js';
+import { createKeyValueAdapter } from './keyValueAdapter.js';
+import { browserStore } from './browserStore.js';
+import { cloudStorage } from '../telegram.js';
 import { isDemo, DEMO_DIARIES, DEMO_ENTRIES } from '../lib/demo.js';
 
 // Format version stamped on every saved record (decision R-33, rule 3).
@@ -15,13 +18,18 @@ import { isDemo, DEMO_DIARIES, DEMO_ENTRIES } from '../lib/demo.js';
 // `upgrade` below how to turn the old shape into the new one.
 export const SCHEMA_VERSION = 1;
 
-// Current adapter: memory only, data is lost on reload (same as before).
-// Next step: a Telegram CloudStorage adapter. Release 2: a server adapter.
-// Demo mode (?demo in the address) always stays in memory, so demo data
-// never mixes with a real user's diary.
-const adapter = isDemo
-  ? createMemoryAdapter({ diaries: DEMO_DIARIES, entries: DEMO_ENTRIES })
-  : createMemoryAdapter();
+// Where data lives now (test build, no server):
+// - inside Telegram: Telegram CloudStorage, synced across the user's devices;
+// - in a normal browser (development): localStorage of that browser;
+// - demo mode (?demo in the address): memory only, so demo data never
+//   mixes with a real user's diary.
+// Release 2: a server adapter replaces the Telegram one here.
+function pickAdapter() {
+  if (isDemo) return createMemoryAdapter({ diaries: DEMO_DIARIES, entries: DEMO_ENTRIES });
+  return createKeyValueAdapter(cloudStorage ?? browserStore);
+}
+
+const adapter = pickAdapter();
 
 const stamp = (record) => ({ ...record, version: SCHEMA_VERSION });
 
