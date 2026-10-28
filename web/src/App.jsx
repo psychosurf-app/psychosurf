@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Welcome from './screens/Welcome.jsx';
 import HowItWorks from './screens/HowItWorks.jsx';
 import SportChoice from './screens/SportChoice.jsx';
@@ -8,14 +8,18 @@ import Training from './screens/Training.jsx';
 import Diary from './screens/Diary.jsx';
 import Compare from './screens/Compare.jsx';
 import TopBar from './components/TopBar.jsx';
-import { isDemo, DEMO_DIARIES, DEMO_ENTRIES } from './lib/demo.js';
+import { loadUserData, saveDiaries, saveEntry } from './storage/index.js';
+
+// Logs a failed save. A visible "could not save" message comes later.
+const reportSaveError = (error) => console.error('Save failed', error);
 
 // Simple screen switcher. A real router comes when there are more screens.
-// Data lives only in memory for now; saving to the server comes later.
+// Data is loaded and saved only through the storage module (R-33).
 export default function App() {
-  const [screen, setScreen] = useState(isDemo ? 'profile' : 'welcome');
-  const [diaries, setDiaries] = useState(isDemo ? DEMO_DIARIES : []);
-  const [entries, setEntries] = useState(isDemo ? DEMO_ENTRIES : []);
+  const [loaded, setLoaded] = useState(false);
+  const [screen, setScreen] = useState('welcome');
+  const [diaries, setDiaries] = useState([]);
+  const [entries, setEntries] = useState([]);
   const [currentDiary, setCurrentDiary] = useState(null);
   const [currentEntryId, setCurrentEntryId] = useState(null);
   const [editing, setEditing] = useState(false);
@@ -24,6 +28,31 @@ export default function App() {
   // Where "back" and "next" lead from the sport choice: onboarding or the profile.
   const [sportsFrom, setSportsFrom] = useState('welcome');
   const [placeholder, setPlaceholder] = useState('');
+
+  // Load saved data once at start. Someone with diaries goes straight to the profile.
+  useEffect(() => {
+    let cancelled = false;
+    loadUserData()
+      .then((data) => {
+        if (cancelled) return;
+        setDiaries(data.diaries);
+        setEntries(data.entries);
+        if (data.diaries.length > 0) setScreen('profile');
+      })
+      .catch((error) => console.error('Load failed', error))
+      .finally(() => {
+        if (!cancelled) setLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // The screen updates at once; saving happens in the background.
+  const updateDiaries = useCallback((list) => {
+    setDiaries(list);
+    saveDiaries(list).catch(reportSaveError);
+  }, []);
 
   const goWelcome = useCallback(() => setScreen('welcome'), []);
   const goProfile = useCallback(() => setScreen('profile'), []);
@@ -38,6 +67,9 @@ export default function App() {
     setScreen('placeholder');
   };
 
+  // Empty page for the moment while data loads.
+  if (!loaded) return null;
+
   if (screen === 'welcome') {
     return <Welcome onStart={goSports} onHowItWorks={() => setScreen('how')} />;
   }
@@ -50,7 +82,7 @@ export default function App() {
     return (
       <SportChoice
         selected={diaries}
-        onChange={setDiaries}
+        onChange={updateDiaries}
         onBack={goSportsBack}
         onNext={goProfile}
       />
@@ -93,6 +125,7 @@ export default function App() {
         onSave={(entry) => {
           // New entry is added; an edited one replaces the old version.
           setEntries((list) => [...list.filter((e) => e.id !== entry.id), entry]);
+          saveEntry(entry).catch(reportSaveError);
           setCurrentEntryId(entry.id);
           setScreen('training');
         }}

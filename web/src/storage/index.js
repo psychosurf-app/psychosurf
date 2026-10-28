@@ -8,6 +8,7 @@
 // are both async, so screens are written for that from day one.
 
 import { createMemoryAdapter } from './memoryAdapter.js';
+import { isDemo, DEMO_DIARIES, DEMO_ENTRIES } from '../lib/demo.js';
 
 // Format version stamped on every saved record (decision R-33, rule 3).
 // Bump it when the shape of a diary or an entry changes, and teach
@@ -16,7 +17,11 @@ export const SCHEMA_VERSION = 1;
 
 // Current adapter: memory only, data is lost on reload (same as before).
 // Next step: a Telegram CloudStorage adapter. Release 2: a server adapter.
-const adapter = createMemoryAdapter();
+// Demo mode (?demo in the address) always stays in memory, so demo data
+// never mixes with a real user's diary.
+const adapter = isDemo
+  ? createMemoryAdapter({ diaries: DEMO_DIARIES, entries: DEMO_ENTRIES })
+  : createMemoryAdapter();
 
 const stamp = (record) => ({ ...record, version: SCHEMA_VERSION });
 
