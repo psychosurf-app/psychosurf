@@ -7,7 +7,8 @@ import { optionsOfKind } from '../data/options.js';
 import { todayIso } from '../lib/format.js';
 
 // Training entry in 3 steps (decision R-27, mockups G-5, G-6, G-7, G-10 to G-12, G-14).
-// Date choice on step 1 (I-29, G-17). Not yet here: "nothing" flow (G-13), waits for V-21.
+// Date choice on step 1 (I-29, G-17). Not yet here: "nothing" flow (G-13), V-21 answered.
+// Step 2 needs at least one emotion, step 3 at least one motivation option (V-23).
 
 const EMOTION_GROUPS = {
   good: { main: 'E+', other: 'E-', mainTitle: 'Приятное', otherTitle: 'Непростое' },
@@ -131,7 +132,13 @@ export default function EntryFlow({ diary, diaryEntries, initial, onCancel, onNo
 
         <div className="entry-bottom">
           <img className="raccoon-peek" src={raccoonPeek} alt="" />
-          <button type="button" className="btn-primary" onClick={() => setStep(3)}>
+          {/* At least one emotion is required (V-23). */}
+          <button
+            type="button"
+            className="btn-primary"
+            disabled={count === 0}
+            onClick={() => setStep(3)}
+          >
             {count > 0 ? `Дальше · выбрано ${count}` : 'Дальше'}
           </button>
         </div>
@@ -185,7 +192,13 @@ export default function EntryFlow({ diary, diaryEntries, initial, onCancel, onNo
 
       <div className="entry-bottom">
         <img className="raccoon-peek raccoon-left" src={raccoonPeek} alt="" />
-        <button type="button" className="btn-primary" disabled={!motivation} onClick={save}>
+        {/* Motivation side and at least one motivation option are required (V-23). */}
+        <button
+          type="button"
+          className="btn-primary"
+          disabled={!motivation || motivationOptions.length === 0}
+          onClick={save}
+        >
           Сохранить запись
         </button>
       </div>
