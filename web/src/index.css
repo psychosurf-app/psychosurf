@@ -1531,3 +1531,16 @@ h1 {
 .cmp-raccoon {
   margin-top: 16px;
 }
+
+/* "Коротко" analysis card (I-31, I-32) */
+.short-text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.short-text + .short-text {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--grid);
+}

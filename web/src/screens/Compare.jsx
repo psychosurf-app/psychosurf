@@ -5,12 +5,10 @@ import PeriodChips from '../components/PeriodChips.jsx';
 import { useTelegramBackButton } from '../telegram.js';
 import { emotionPoint, motivationPoint, sortEntries } from '../lib/points.js';
 import { daysBetween, describePeriod, inRange, shortDate } from '../lib/period.js';
+import { compareSummary, sportStats } from '../lib/analysis/compare.js';
 
-// Sport comparison, mockup G-18 v1.
-// Not yet here: "Коротко" card — its texts come from Yana's phrases (V-16).
-
-// Below this many trainings in the period a sport is marked "мало записей".
-const FEW_ENTRIES = 4;
+// Sport comparison, mockup G-18 v1, with the "Коротко" card from Yana's phrases A-1 — A-9 (I-31).
+// A sport with exactly one training in the period is marked "мало записей" (V-28, q.2).
 
 function Bar({ label, value, total, color }) {
   return (
@@ -45,14 +43,10 @@ export default function Compare({ diaries, entries, onBack }) {
       perDay[e.trainingDate] = (perDay[e.trainingDate] ?? 0) + 1;
       return Math.min(1, (daysBetween(range.from, e.trainingDate) + (perDay[e.trainingDate] - 1) * 0.25) / span);
     });
-    return {
-      diary,
-      list,
-      xs,
-      emotionsPlus: list.filter((e) => e.tone === 'good').length,
-      pullsForward: list.filter((e) => e.motivation === 'forward').length,
-    };
+    return { diary, list, xs, stats: sportStats(list) };
   });
+
+  const summary = compareSummary(rows, diaries.length);
 
   const series = rows
     .filter((r) => r.list.length > 0)
@@ -91,14 +85,15 @@ export default function Compare({ diaries, entries, onBack }) {
             <div className="cmp-sport-head">
               <span className="dot dot-big" style={{ background: r.diary.color }} />
               <strong>{r.diary.name}</strong>
-              {r.list.length > 0 && r.list.length < FEW_ENTRIES && <span className="cmp-few">мало записей</span>}
+              {r.list.length === 1 && <span className="cmp-few">мало записей</span>}
             </div>
             {r.list.length === 0 ? (
               <p className="chart-empty">За этот период тренировок нет.</p>
             ) : (
               <>
-                <Bar label="Эмоции в плюс" value={r.emotionsPlus} total={r.list.length} color={r.diary.color} />
-                <Bar label="Тянет вперёд" value={r.pullsForward} total={r.list.length} color={r.diary.color} />
+                {/* "Nothing" entries don't count for emotions (V-28, q.1). */}
+                <Bar label="Эмоции в плюс" value={r.stats.ePlus} total={r.stats.emoTotal} color={r.diary.color} />
+                <Bar label="Тянет вперёд" value={r.stats.mPlus} total={r.stats.total} color={r.diary.color} />
               </>
             )}
           </div>
@@ -134,6 +129,17 @@ export default function Compare({ diaries, entries, onBack }) {
               </span>
             ))}
           </div>
+        </section>
+      )}
+
+      {summary.length > 0 && (
+        <section className="chart-card short-card">
+          <h2>Коротко</h2>
+          {summary.map((p, i) => (
+            <p key={`${p.id}-${i}`} className="short-text">
+              {p.text}
+            </p>
+          ))}
         </section>
       )}
 
