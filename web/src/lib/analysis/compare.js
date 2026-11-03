@@ -1,56 +1,32 @@
 import { COMPARE_PHRASES } from '../../data/comparePhrases.js';
 import { bagOf } from '../bags.js';
-import { sortEntries } from '../points.js';
 import { pickVariant, fillPhrase } from './phrases.js';
+import { addSupport, emotionPlus, isNumb, moreOften, withEmotions, zoneShift } from './rules.js';
 
 // "Коротко" card on the sport comparison screen (idea I-31).
 // Phrases are Yana's approved texts, chosen by fixed rules. No AI (R-8, V-16).
 // Thresholds are Yana's answers to V-28 (2026-10-29), see the phrases doc.
 
 const MAX_PHRASES = 3;
-// A shift (A-7) needs at least this many trainings with emotions (3 in each half).
-const SHIFT_MIN = 6;
-
-const isNumb = (e) => e.tone === 'numb';
 
 // Counts for one sport in the period.
 // "Nothing" entries don't count for emotions, but count for motivation (V-28, q.1).
 export function sportStats(list) {
-  const withEmotions = list.filter((e) => !isNumb(e));
-  const ePlus = withEmotions.filter((e) => e.tone === 'good').length;
+  const emo = list.filter((e) => !isNumb(e));
+  const ePlus = emo.filter(emotionPlus).length;
   return {
     total: list.length,
-    emoTotal: withEmotions.length,
+    emoTotal: emo.length,
     ePlus,
-    eMinus: withEmotions.length - ePlus,
+    eMinus: emo.length - ePlus,
     mPlus: list.filter((e) => e.motivation === 'forward').length,
     mMinus: list.filter((e) => e.motivation === 'not_forward').length,
     wipedOut: list.filter((e) => bagOf(e) === 'wiped_out').length,
   };
 }
 
-// "More often" = ahead by at least one training. A tie is not "more often" (V-28, q.3).
-const moreOften = (a, b) => a > b;
-
-// Emotion zone of a group of trainings: 'plus', 'minus' or null on a tie.
-function emotionZone(list) {
-  const plus = list.filter((e) => e.tone === 'good').length;
-  const minus = list.length - plus;
-  if (plus > minus) return 'plus';
-  if (minus > plus) return 'minus';
-  return null;
-}
-
-// A-7: the emotion zone changed between the first and the second half of the period (V-28, q.7).
-export function emotionShift(list) {
-  const withEmotions = sortEntries(list).filter((e) => !isNumb(e));
-  if (withEmotions.length < SHIFT_MIN) return null;
-  const half = Math.floor(withEmotions.length / 2);
-  const before = emotionZone(withEmotions.slice(0, half));
-  const after = emotionZone(withEmotions.slice(half));
-  if (!before || !after || before === after) return null;
-  return after === 'plus' ? 'better' : 'worse';
-}
+// A-7: emotion zone changed between the halves of the period (V-28, q.7).
+export const emotionShift = (list) => zoneShift(withEmotions(list), emotionPlus);
 
 // The one sport with the highest share, or null if several share the top (V-28, q.5-6).
 function uniqueTop(rows, share) {
@@ -134,16 +110,9 @@ export function compareSummary(rows, totalSports) {
     usedSports.add(c.sportKey);
   }
 
-  // Rule 2: after a heavy phrase, if possible, a support (A-1 or A-7 "better"),
-  // so the summary doesn't end on a minus.
-  const firstHeavy = chosen.findIndex((c) => c.heavy);
-  if (firstHeavy !== -1 && !chosen.some((c) => c.support)) {
-    const support = candidates.find((c) => c.support && !usedSports.has(c.sportKey));
-    if (support) {
-      if (chosen.length >= limit && chosen.length - 1 !== firstHeavy) chosen.pop();
-      if (chosen.length < limit) chosen.splice(firstHeavy + 1, 0, support);
-    }
-  }
+  // Rule 2: after a heavy phrase, if possible, a support (A-1 or A-7 "better").
+  const withSupport = addSupport(chosen, candidates, limit, (c) => !usedSports.has(c.sportKey));
+  chosen.splice(0, chosen.length, ...withSupport);
 
   // A-6: even, no clear leader — only when nothing else was found.
   if (chosen.length === 0 && counted.length >= 2) chosen.push(phrase('A-6', null));

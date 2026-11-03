@@ -20,10 +20,10 @@ function nameInSentence(name) {
   return name[0].toLowerCase() + name.slice(1);
 }
 
-// Fill {Спорт} and {k из n}. The sport name keeps its capital letter
+// Fill {Спорт}, {k из n} and {N}. The sport name keeps its capital letter
 // at the start of a sentence and is lowercased elsewhere.
-export function fillPhrase(template, { sport, k, n } = {}) {
-  let text = template.replace('{k из n}', `${k} из ${n}`);
+export function fillPhrase(template, { sport, k, n, N } = {}) {
+  let text = template.replace('{k из n}', `${k} из ${n}`).replace('{N}', String(N));
   if (sport) {
     text = text.replace(/\{Спорт\}/g, (match, offset) =>
       /^$|[.!?]\s+$/.test(text.slice(0, offset)) ? sport : nameInSentence(sport),

@@ -8,10 +8,12 @@ import { BAGS, bagOf } from '../lib/bags.js';
 import { countText } from '../lib/format.js';
 import { describePeriod, inRange, shortDate } from '../lib/period.js';
 import { emotionPoint, motivationPoint, sortEntries } from '../lib/points.js';
+import { diarySummary } from '../lib/analysis/diary.js';
 
 // Diary of one sport with charts, mockup G-16 v1 (ideas I-14, I-17, I-27).
 // Tabs "Графики" and "Улов" (G-4) share one period: week, month or custom (V-15).
-// Not yet here: analysis card (waits for Yana's phrases, V-16).
+// "Коротко" card from Yana's phrases D-1 — D-12 (I-32).
+// Not yet here: red flag instead of the card (R-22), comes with the red flag screen.
 
 const TRAININGS = ['тренировка', 'тренировки', 'тренировок'];
 const LIST_PREVIEW = 5;
@@ -33,6 +35,7 @@ export default function Diary({ diary, entries, onBack, onAddEntry, onOpenEntry 
   const range = describePeriod(period);
   const { title, phrase } = range;
   const list = inRange(sorted, range);
+  const summary = diarySummary(list, sorted);
   // "Nothing" entries sit at 0 on the emotion chart (R-25).
   const series = [];
   if (mode !== 'motivation')
@@ -173,6 +176,17 @@ export default function Diary({ diary, entries, onBack, onAddEntry, onOpenEntry 
               </>
             )}
           </section>
+
+          {summary.length > 0 && (
+            <section className="chart-card short-card">
+              <h2>Коротко {phrase}</h2>
+              {summary.map((p, i) => (
+                <p key={`${p.id}-${i}`} className="short-text">
+                  {p.text}
+                </p>
+              ))}
+            </section>
+          )}
 
           <div className="list-head">
             <h2 className="section-title">Тренировки</h2>
