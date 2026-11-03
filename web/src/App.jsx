@@ -7,6 +7,9 @@ import EntryFlow from './screens/EntryFlow.jsx';
 import Training from './screens/Training.jsx';
 import Diary from './screens/Diary.jsx';
 import Compare from './screens/Compare.jsx';
+import RedFlag from './screens/RedFlag.jsx';
+import Article from './screens/Article.jsx';
+import { isRedFlag } from './lib/redFlag.js';
 import TopBar from './components/TopBar.jsx';
 import { loadUserData, saveDiaries, saveEntry } from './storage/index.js';
 
@@ -28,6 +31,8 @@ export default function App() {
   // Where "back" and "next" lead from the sport choice: onboarding or the profile.
   const [sportsFrom, setSportsFrom] = useState('welcome');
   const [placeholder, setPlaceholder] = useState('');
+  // Screen to return to from an article: 'redflag' or 'diary'.
+  const [articleFrom, setArticleFrom] = useState('diary');
 
   // Load saved data once at start. Someone with diaries goes straight to the profile.
   useEffect(() => {
@@ -123,10 +128,12 @@ export default function App() {
         onCancel={() => setScreen(editing ? 'training' : returnTo)}
         onSave={(entry) => {
           // New entry is added; an edited one replaces the old version.
-          setEntries((list) => [...list.filter((e) => e.id !== entry.id), entry]);
+          const next = [...entries.filter((e) => e.id !== entry.id), entry];
+          setEntries(next);
           saveEntry(entry).catch(reportSaveError);
           setCurrentEntryId(entry.id);
-          setScreen('training');
+          // The second "nothing" in a row shows the red flag before the training (R-22).
+          setScreen(entry.tone === 'numb' && isRedFlag(next) ? 'redflag' : 'training');
         }}
       />
     );
@@ -163,8 +170,29 @@ export default function App() {
           setReturnTo('diary');
           setScreen('training');
         }}
+        redFlag={isRedFlag(entries)}
+        onOpenArticle={() => {
+          setArticleFrom('diary');
+          setScreen('article');
+        }}
       />
     );
+  }
+
+  if (screen === 'redflag') {
+    return (
+      <RedFlag
+        onArticle={() => {
+          setArticleFrom('redflag');
+          setScreen('article');
+        }}
+        onContinue={() => setScreen('training')}
+      />
+    );
+  }
+
+  if (screen === 'article') {
+    return <Article articleKey="burnout" onBack={() => setScreen(articleFrom)} />;
   }
 
   if (screen === 'compare') {

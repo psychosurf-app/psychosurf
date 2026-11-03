@@ -1544,3 +1544,100 @@ h1 {
   padding-top: 10px;
   border-top: 1px solid var(--grid);
 }
+
+/* Red flag (G-19) and articles (G-22) */
+.flag-text {
+  margin: 0 0 14px;
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.flag-callout {
+  margin: 0 0 16px;
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--orange);
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+.article-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin: 0 0 12px;
+  padding: 16px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--card);
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.short-card .article-card {
+  margin: 0;
+  background: var(--bg);
+}
+
+.article-card-title {
+  display: block;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.article-card-label {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+  color: var(--hint);
+}
+
+.article-label {
+  margin: 8px 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--teal);
+}
+
+.article-subtitle {
+  margin: 0 0 20px;
+  font-size: 18px;
+  color: var(--text-soft);
+}
+
+.article-h {
+  margin: 28px 0 10px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.article-sub {
+  margin: 18px 0 6px;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.article-p,
+.article-list {
+  margin: 0 0 12px;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.article-list {
+  padding-left: 20px;
+}
+
+.article-list li + li {
+  margin-top: 6px;
+}
+
+.article .btn-primary {
+  margin-top: 24px;
+}

@@ -9,11 +9,12 @@ import { countText } from '../lib/format.js';
 import { describePeriod, inRange, shortDate } from '../lib/period.js';
 import { emotionPoint, motivationPoint, sortEntries } from '../lib/points.js';
 import { diarySummary } from '../lib/analysis/diary.js';
+import { BurnoutArticleButton, RedFlagText } from '../components/RedFlagCard.jsx';
 
 // Diary of one sport with charts, mockup G-16 v1 (ideas I-14, I-17, I-27).
 // Tabs "Графики" and "Улов" (G-4) share one period: week, month or custom (V-15).
 // "Коротко" card from Yana's phrases D-1 — D-12 (I-32).
-// Not yet here: red flag instead of the card (R-22), comes with the red flag screen.
+// With a red flag the card shows the red flag text instead (R-22, phrases doc).
 
 const TRAININGS = ['тренировка', 'тренировки', 'тренировок'];
 const LIST_PREVIEW = 5;
@@ -24,7 +25,7 @@ const CHART_MODES = [
   ['both', 'Вместе'],
 ];
 
-export default function Diary({ diary, entries, onBack, onAddEntry, onOpenEntry }) {
+export default function Diary({ diary, entries, onBack, onAddEntry, onOpenEntry, redFlag, onOpenArticle }) {
   const telegramHandlesBack = useTelegramBackButton(onBack);
   const [tab, setTab] = useState('charts');
   const [period, setPeriod] = useState({ type: 'month' });
@@ -177,7 +178,15 @@ export default function Diary({ diary, entries, onBack, onAddEntry, onOpenEntry 
             )}
           </section>
 
-          {summary.length > 0 && (
+          {redFlag && (
+            <section className="chart-card short-card">
+              <h2>Давай остановимся на минутку</h2>
+              <RedFlagText />
+              <BurnoutArticleButton onClick={onOpenArticle} />
+            </section>
+          )}
+
+          {!redFlag && summary.length > 0 && (
             <section className="chart-card short-card">
               <h2>Коротко {phrase}</h2>
               {summary.map((p, i) => (
