@@ -2,6 +2,7 @@
 // Telegram CloudStorage inside Telegram, browser localStorage outside it.
 //
 // Layout (keys are limited to A-Z a-z 0-9 _ -, values to 4096 chars):
+//   profile         -> JSON of the person's own settings: { displayName }
 //   diaries         -> JSON list of all diaries (short: one per sport)
 //   e_<entry id>    -> JSON of one entry (notes are capped at 300 chars each)
 //
@@ -9,6 +10,7 @@
 // cheap. The cost: about 1000 trainings per user (CloudStorage allows 1024
 // keys). That is years of diary; the server in release 2 removes the limit.
 
+const PROFILE_KEY = 'profile';
 const DIARIES_KEY = 'diaries';
 const ENTRY_PREFIX = 'e_';
 const VALUE_LIMIT = 4096;
@@ -41,8 +43,9 @@ export function createKeyValueAdapter(store) {
       const keys = await store.getKeys();
       const entryKeys = keys.filter((k) => k.startsWith(ENTRY_PREFIX));
 
-      const diariesRaw = await store.getItems([DIARIES_KEY]);
-      const diaries = parse(diariesRaw[DIARIES_KEY], DIARIES_KEY) ?? [];
+      const head = await store.getItems([PROFILE_KEY, DIARIES_KEY]);
+      const profile = parse(head[PROFILE_KEY], PROFILE_KEY) ?? {};
+      const diaries = parse(head[DIARIES_KEY], DIARIES_KEY) ?? [];
 
       const entries = [];
       for (let i = 0; i < entryKeys.length; i += BATCH) {
@@ -53,7 +56,11 @@ export function createKeyValueAdapter(store) {
           if (entry) entries.push(entry);
         }
       }
-      return { diaries, entries };
+      return { profile, diaries, entries };
+    },
+
+    async saveProfile(profile) {
+      await store.setItem(PROFILE_KEY, toValue(profile));
     },
 
     async saveDiaries(list) {

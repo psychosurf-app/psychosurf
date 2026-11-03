@@ -2,18 +2,23 @@
 // Used for local development and as the simplest working adapter.
 //
 // Every adapter has the same four functions:
-//   load()            -> { diaries, entries }
+//   load()            -> { profile, diaries, entries }
+//   saveProfile(profile)
 //   saveDiaries(list)
 //   saveEntry(entry)
 //   deleteEntry(id)
 
 export function createMemoryAdapter(initial = { diaries: [], entries: [] }) {
+  let profile = { ...(initial.profile ?? {}) };
   let diaries = [...initial.diaries];
   let entries = [...initial.entries];
 
   return {
     async load() {
-      return { diaries: [...diaries], entries: [...entries] };
+      return { profile: { ...profile }, diaries: [...diaries], entries: [...entries] };
+    },
+    async saveProfile(next) {
+      profile = { ...next };
     },
     async saveDiaries(list) {
       diaries = [...list];

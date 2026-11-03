@@ -11,7 +11,9 @@ import RedFlag from './screens/RedFlag.jsx';
 import Article from './screens/Article.jsx';
 import { isRedFlag } from './lib/redFlag.js';
 import TopBar from './components/TopBar.jsx';
-import { loadUserData, saveDiaries, saveEntry } from './storage/index.js';
+import Settings from './screens/Settings.jsx';
+import About from './screens/About.jsx';
+import { loadUserData, saveDiaries, saveEntry, saveProfile } from './storage/index.js';
 
 // Logs a failed save. A visible "could not save" message comes later.
 const reportSaveError = (error) => console.error('Save failed', error);
@@ -21,6 +23,7 @@ const reportSaveError = (error) => console.error('Save failed', error);
 export default function App() {
   const [loaded, setLoaded] = useState(false);
   const [screen, setScreen] = useState('welcome');
+  const [profile, setProfile] = useState({});
   const [diaries, setDiaries] = useState([]);
   const [entries, setEntries] = useState([]);
   const [currentDiary, setCurrentDiary] = useState(null);
@@ -41,6 +44,7 @@ export default function App() {
     loadUserData()
       .then((data) => {
         if (cancelled) return;
+        setProfile(data.profile);
         setDiaries(data.diaries);
         setEntries(data.entries);
         if (data.diaries.length > 0) setScreen('profile');
@@ -81,7 +85,7 @@ export default function App() {
   }
 
   if (screen === 'how') {
-    return <HowItWorks onBack={goWelcome} onStart={goSports} />;
+    return <HowItWorks name={profile.displayName} onBack={goWelcome} onStart={goSports} />;
   }
 
   if (screen === 'sports') {
@@ -98,6 +102,7 @@ export default function App() {
   if (screen === 'profile') {
     return (
       <Profile
+        name={profile.displayName}
         diaries={diaries}
         entries={entries}
         onAddEntry={(d) => {
@@ -120,7 +125,7 @@ export default function App() {
           setArticleFrom('profile');
           setScreen('article');
         }}
-        onSettings={() => showPlaceholder('Настройки')}
+        onSettings={() => setScreen('settings')}
       />
     );
   }
@@ -184,6 +189,26 @@ export default function App() {
         }}
       />
     );
+  }
+
+  if (screen === 'settings') {
+    return (
+      <Settings
+        displayName={profile.displayName}
+        onSaveName={(displayName) => {
+          const next = { ...profile, displayName };
+          setProfile(next);
+          saveProfile(next).catch(reportSaveError);
+          setScreen('profile');
+        }}
+        onAbout={() => setScreen('about')}
+        onBack={goProfile}
+      />
+    );
+  }
+
+  if (screen === 'about') {
+    return <About onBack={() => setScreen('settings')} />;
   }
 
   if (screen === 'redflag') {

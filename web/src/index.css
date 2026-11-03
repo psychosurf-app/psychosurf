@@ -1652,3 +1652,47 @@ h1 {
   padding: 0;
   text-decoration: underline;
 }
+
+/* Settings and "О приложении" */
+.settings-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.settings-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--grid);
+  border-radius: 14px;
+  background: #ffffff;
+  color: var(--text);
+  font: inherit;
+  font-size: 17px;
+}
+
+.settings-input:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+
+.settings-hint {
+  margin: 8px 0 16px;
+  font-size: 14px;
+  color: var(--hint);
+}
+
+.settings-row {
+  margin-top: 16px;
+}
+
+.about-disclaimer {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--card);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-soft);
+}

@@ -39,13 +39,19 @@ function upgrade(record) {
   return record;
 }
 
-// Everything the app needs at start: { diaries: [...], entries: [...] }.
+// Everything the app needs at start: { profile: {...}, diaries: [...], entries: [...] }.
 export async function loadUserData() {
-  const { diaries, entries } = await adapter.load();
+  const { profile, diaries, entries } = await adapter.load();
   return {
+    profile: upgrade(profile ?? {}),
     diaries: diaries.map(upgrade),
     entries: entries.map(upgrade),
   };
+}
+
+// Saves the person's own settings, e.g. { displayName } ("Как тебя называть", V-18).
+export async function saveProfile(profile) {
+  await adapter.saveProfile(stamp(profile));
 }
 
 // Saves the full list of diaries (it is short: one per sport).
