@@ -121,7 +121,6 @@ export default function App() {
         diaryEntries={entries.filter((e) => e.diaryKey === currentDiary.key)}
         initial={editing ? entries.find((e) => e.id === currentEntryId) : null}
         onCancel={() => setScreen(editing ? 'training' : returnTo)}
-        onNothing={() => showPlaceholder('Точно ничего?')}
         onSave={(entry) => {
           // New entry is added; an edited one replaces the old version.
           setEntries((list) => [...list.filter((e) => e.id !== entry.id), entry]);

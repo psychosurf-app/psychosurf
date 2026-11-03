@@ -3,11 +3,12 @@ import raccoonPeek from '../assets/raccoon-peek.png';
 import StepHeader from '../components/StepHeader.jsx';
 import { OptionChips, OtherOptions, NoteField } from '../components/OptionPicker.jsx';
 import { DateChip, DateSheet } from '../components/DatePicker.jsx';
-import { optionsOfKind } from '../data/options.js';
+import { NOTHING_GROUPS, OPTION_BY_CODE, optionsOfKind } from '../data/options.js';
 import { todayIso } from '../lib/format.js';
 
 // Training entry in 3 steps (decision R-27, mockups G-5, G-6, G-7, G-10 to G-12, G-14).
-// Date choice on step 1 (I-29, G-17). Not yet here: "nothing" flow (G-13), V-21 answered.
+// Date choice on step 1 (I-29, G-17).
+// "Ничего не чувствую" opens "Точно ничего?" (I-20, G-13 v3); motivation is asked after it anyway (V-21).
 // Step 2 needs at least one emotion, step 3 at least one motivation option (V-23).
 
 const EMOTION_GROUPS = {
@@ -20,11 +21,18 @@ const MOTIVATION_GROUPS = {
   not_forward: { main: 'M-', other: 'M+', otherTitle: 'Тянет вперёд' },
 };
 
+const isNothingOnly = (code) => Boolean(OPTION_BY_CODE[code]?.nothingOnly);
+
+// Tone after "Точно ничего?" (proposal in V-32, waits for Yana):
+// only "quiet calm" options chosen → "Скорее хорошо", anything else → "Скорее непросто".
+const toneFromNearEmotions = (codes) =>
+  codes.every((c) => OPTION_BY_CODE[c]?.kind === 'E+') ? 'good' : 'hard';
+
 const toggleIn = (list, code) =>
   list.includes(code) ? list.filter((c) => c !== code) : [...list, code];
 
 // `initial` — an existing entry to edit (pencil on G-15); empty for a new entry.
-export default function EntryFlow({ diary, diaryEntries, initial, onCancel, onNothing, onSave }) {
+export default function EntryFlow({ diary, diaryEntries, initial, onCancel, onSave }) {
   const [step, setStep] = useState(1);
   const [trainingDate, setTrainingDate] = useState(initial?.trainingDate ?? todayIso());
   const [dateOpen, setDateOpen] = useState(false);
@@ -34,10 +42,34 @@ export default function EntryFlow({ diary, diaryEntries, initial, onCancel, onNo
   const [motivation, setMotivation] = useState(initial?.motivation ?? null);
   const [motivationOptions, setMotivationOptions] = useState(initial?.motivationOptions ?? []);
   const [motivationNote, setMotivationNote] = useState(initial?.motivationNote ?? '');
+  // True when step 3 was reached through "Точно ничего?": "back" leads there, not to step 2.
+  const [viaNothing, setViaNothing] = useState(false);
 
   function pickTone(value) {
     setTone(value);
+    setViaNothing(false);
+    // Options from "Точно ничего?" don't belong to the usual lists.
+    setEmotions((list) => list.filter((c) => !isNothingOnly(c)));
     setStep(2);
+  }
+
+  function openNothing() {
+    // A fresh choice: emotions of step 2 don't carry over.
+    setEmotions((list) => (tone === 'numb' || list.some(isNothingOnly) ? list : []));
+    setStep('nothing');
+  }
+
+  function nothingNext() {
+    setTone(toneFromNearEmotions(emotions));
+    setViaNothing(true);
+    setStep(3);
+  }
+
+  function reallyNothing() {
+    setTone('numb');
+    setEmotions([]);
+    setViaNothing(true);
+    setStep(3);
   }
 
   function save() {
@@ -83,7 +115,7 @@ export default function EntryFlow({ diary, diaryEntries, initial, onCancel, onNo
               <span className="tone-sub">На выходе тяжело или неприятно</span>
             </span>
           </button>
-          <button type="button" className="btn-link" onClick={onNothing}>
+          <button type="button" className="btn-link" onClick={openNothing}>
             Ничего не чувствую
           </button>
         </div>
@@ -99,6 +131,42 @@ export default function EntryFlow({ diary, diaryEntries, initial, onCancel, onNo
             }}
           />
         )}
+      </main>
+    );
+  }
+
+  // "Точно ничего?" — close emotions, or confirm "really nothing" (G-13 v3, I-20).
+  if (step === 'nothing') {
+    const count = emotions.length;
+    return (
+      <main className="screen entry">
+        <StepHeader sportName={diary.name} step={2} onBack={() => setStep(1)} />
+        <h1 className="page-title">Точно ничего?</h1>
+        <p className="page-text">
+          Дружок, совсем ничего не чувствовать почти невозможно. Часто так ощущается усталость.
+          Прислушайся ещё раз — может, что-то из этого?
+        </p>
+
+        {NOTHING_GROUPS.map((g) => (
+          <section key={g.title} className="option-group">
+            <h3 className="group-title">{g.title}</h3>
+            <OptionChips
+              options={g.options}
+              selected={emotions}
+              onToggle={(c) => setEmotions(toggleIn(emotions, c))}
+            />
+          </section>
+        ))}
+
+        <div className="entry-bottom">
+          <img className="raccoon-peek" src={raccoonPeek} alt="" />
+          <button type="button" className="btn-primary" disabled={count === 0} onClick={nothingNext}>
+            {count > 0 ? `Дальше · выбрано ${count}` : 'Дальше'}
+          </button>
+          <button type="button" className="btn-link" onClick={reallyNothing}>
+            Нет, правда ничего не чувствую
+          </button>
+        </div>
       </main>
     );
   }
@@ -150,7 +218,11 @@ export default function EntryFlow({ diary, diaryEntries, initial, onCancel, onNo
   const m = motivation ? MOTIVATION_GROUPS[motivation] : null;
   return (
     <main className="screen entry">
-      <StepHeader sportName={diary.name} step={3} onBack={() => setStep(2)} />
+      <StepHeader
+        sportName={diary.name}
+        step={3}
+        onBack={() => setStep(viaNothing ? 'nothing' : 2)}
+      />
       <h1 className="page-title">А что с мотивацией?</h1>
       <p className="page-text">Хочется двигаться дальше? Выбери, что ближе.</p>
 
