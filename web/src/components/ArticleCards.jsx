@@ -19,12 +19,12 @@ export function RedFlagText() {
   );
 }
 
-// Button that opens the article, with the "bonus" label instead of "free" (I-39).
-export function BurnoutArticleButton({ onClick }) {
+// Card that opens one of Yana's articles, labelled "bonus" instead of "free" (I-39).
+export function ArticleCard({ title, onClick }) {
   return (
     <button type="button" className="article-card" onClick={onClick}>
       <span>
-        <span className="article-card-title">Почитать про выгорание</span>
+        <span className="article-card-title">{title}</span>
         <span className="article-card-label">Бонус · статья психолога</span>
       </span>
       <span className="row-arrow" aria-hidden="true">
@@ -33,3 +33,7 @@ export function BurnoutArticleButton({ onClick }) {
     </button>
   );
 }
+
+export const BurnoutArticleButton = ({ onClick }) => (
+  <ArticleCard title="Почитать про выгорание" onClick={onClick} />
+);

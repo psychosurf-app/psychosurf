@@ -1,6 +1,6 @@
 import raccoonPeek from '../assets/raccoon-peek.png';
 import TopBar from '../components/TopBar.jsx';
-import { BurnoutArticleButton, RedFlagText } from '../components/RedFlagCard.jsx';
+import { BurnoutArticleButton, RedFlagText } from '../components/ArticleCards.jsx';
 
 // Red flag screen, mockup G-19 v1 (I-33). Shown right after saving the second "nothing" in a row.
 export default function RedFlag({ onArticle, onContinue }) {

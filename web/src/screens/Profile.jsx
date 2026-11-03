@@ -1,3 +1,4 @@
+import { ArticleCard } from '../components/ArticleCards.jsx';
 import raccoonPeek from '../assets/raccoon-peek.png';
 import Sparkline from '../components/Sparkline.jsx';
 import { countText, daysAgoText } from '../lib/format.js';
@@ -14,6 +15,7 @@ export default function Profile({
   onOpenDiary,
   onAddSport,
   onCompare,
+  onArticle,
   onSettings,
 }) {
   const total = entries.length;
@@ -97,6 +99,11 @@ export default function Profile({
           </span>
           <span className="compare-arrow" aria-hidden="true">›</span>
         </button>
+      </div>
+
+      {/* Free article by Yana (I-39). Later this spot can grow into a library of articles. */}
+      <div className="profile-articles">
+        <ArticleCard title="Что такое мотивация" onClick={() => onArticle('motivation')} />
       </div>
     </main>
   );

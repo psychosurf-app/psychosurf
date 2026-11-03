@@ -31,7 +31,8 @@ export default function App() {
   // Where "back" and "next" lead from the sport choice: onboarding or the profile.
   const [sportsFrom, setSportsFrom] = useState('welcome');
   const [placeholder, setPlaceholder] = useState('');
-  // Screen to return to from an article: 'redflag' or 'diary'.
+  // Which article is open and where to return: 'redflag', 'diary' or 'profile'.
+  const [article, setArticle] = useState('burnout');
   const [articleFrom, setArticleFrom] = useState('diary');
 
   // Load saved data once at start. Someone with diaries goes straight to the profile.
@@ -114,6 +115,11 @@ export default function App() {
           setScreen('sports');
         }}
         onCompare={() => setScreen('compare')}
+        onArticle={(key) => {
+          setArticle(key);
+          setArticleFrom('profile');
+          setScreen('article');
+        }}
         onSettings={() => showPlaceholder('Настройки')}
       />
     );
@@ -172,6 +178,7 @@ export default function App() {
         }}
         redFlag={isRedFlag(entries)}
         onOpenArticle={() => {
+          setArticle('burnout');
           setArticleFrom('diary');
           setScreen('article');
         }}
@@ -183,6 +190,7 @@ export default function App() {
     return (
       <RedFlag
         onArticle={() => {
+          setArticle('burnout');
           setArticleFrom('redflag');
           setScreen('article');
         }}
@@ -192,7 +200,7 @@ export default function App() {
   }
 
   if (screen === 'article') {
-    return <Article articleKey="burnout" onBack={() => setScreen(articleFrom)} />;
+    return <Article articleKey={article} onBack={() => setScreen(articleFrom)} />;
   }
 
   if (screen === 'compare') {

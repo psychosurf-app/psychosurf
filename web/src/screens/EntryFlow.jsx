@@ -5,6 +5,7 @@ import { OptionChips, OtherOptions, NoteField } from '../components/OptionPicker
 import { DateChip, DateSheet } from '../components/DatePicker.jsx';
 import { NOTHING_GROUPS, OPTION_BY_CODE, optionsOfKind } from '../data/options.js';
 import { todayIso } from '../lib/format.js';
+import Article from './Article.jsx';
 
 // Training entry in 3 steps (decision R-27, mockups G-5, G-6, G-7, G-10 to G-12, G-14).
 // Date choice on step 1 (I-29, G-17).
@@ -44,6 +45,8 @@ export default function EntryFlow({ diary, diaryEntries, initial, onCancel, onSa
   const [motivationNote, setMotivationNote] = useState(initial?.motivationNote ?? '');
   // True when step 3 was reached through "Точно ничего?": "back" leads there, not to step 2.
   const [viaNothing, setViaNothing] = useState(false);
+  // The motivation article opens over the entry, so nothing typed so far is lost (I-39).
+  const [readingArticle, setReadingArticle] = useState(false);
 
   function pickTone(value) {
     setTone(value);
@@ -214,6 +217,10 @@ export default function EntryFlow({ diary, diaryEntries, initial, onCancel, onSa
     );
   }
 
+  if (readingArticle) {
+    return <Article articleKey="motivation" onBack={() => setReadingArticle(false)} />;
+  }
+
   // Step 3 — motivation, required choice (G-7, G-12).
   const m = motivation ? MOTIVATION_GROUPS[motivation] : null;
   return (
@@ -224,6 +231,9 @@ export default function EntryFlow({ diary, diaryEntries, initial, onCancel, onSa
         onBack={() => setStep(viaNothing ? 'nothing' : 2)}
       />
       <h1 className="page-title">А что с мотивацией?</h1>
+      <button type="button" className="link-sm article-link" onClick={() => setReadingArticle(true)}>
+        Что такое мотивация?
+      </button>
       <p className="page-text">Хочется двигаться дальше? Выбери, что ближе.</p>
 
       <div className="segmented" role="radiogroup">

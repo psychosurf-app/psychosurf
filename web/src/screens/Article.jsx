@@ -1,7 +1,13 @@
+import { useEffect } from 'react';
 import TopBar from '../components/TopBar.jsx';
 import { ARTICLES } from '../data/articles.js';
 
-// One free article by Yana (G-22 for burnout). The same screen will show other articles (I-39).
+// One free article by Yana: burnout (G-22) or motivation (G-24, I-39).
+
+// Paragraph with **bold** parts.
+function Rich({ text }) {
+  return text.split('**').map((part, i) => (i % 2 ? <strong key={i}>{part}</strong> : part));
+}
 
 function ListItem({ text, plain }) {
   const split = plain ? -1 : text.indexOf(' — ');
@@ -16,6 +22,9 @@ function ListItem({ text, plain }) {
 
 export default function Article({ articleKey, onBack }) {
   const article = ARTICLES[articleKey];
+
+  // Articles are long: always start reading from the top.
+  useEffect(() => window.scrollTo(0, 0), [articleKey]);
 
   return (
     <main className="screen article">
@@ -36,7 +45,11 @@ export default function Article({ articleKey, onBack }) {
             </ul>
           );
         }
-        return <p key={i} className="article-p">{b.text}</p>;
+        return (
+          <p key={i} className="article-p">
+            <Rich text={b.text} />
+          </p>
+        );
       })}
 
       <button type="button" className="btn-primary" onClick={onBack}>

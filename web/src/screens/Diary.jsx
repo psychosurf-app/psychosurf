@@ -9,7 +9,7 @@ import { countText } from '../lib/format.js';
 import { describePeriod, inRange, shortDate } from '../lib/period.js';
 import { emotionPoint, motivationPoint, sortEntries } from '../lib/points.js';
 import { diarySummary } from '../lib/analysis/diary.js';
-import { BurnoutArticleButton, RedFlagText } from '../components/RedFlagCard.jsx';
+import { BurnoutArticleButton, RedFlagText } from '../components/ArticleCards.jsx';
 
 // Diary of one sport with charts, mockup G-16 v1 (ideas I-14, I-17, I-27).
 // Tabs "Графики" and "Улов" (G-4) share one period: week, month or custom (V-15).
