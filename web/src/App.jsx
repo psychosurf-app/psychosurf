@@ -13,7 +13,7 @@ import { isRedFlag } from './lib/redFlag.js';
 import TopBar from './components/TopBar.jsx';
 import Settings from './screens/Settings.jsx';
 import About from './screens/About.jsx';
-import { loadUserData, saveDiaries, saveEntry, saveProfile } from './storage/index.js';
+import { deleteEntry, loadUserData, saveDiaries, saveEntry, saveProfile } from './storage/index.js';
 
 // Logs a failed save. A visible "could not save" message comes later.
 const reportSaveError = (error) => console.error('Save failed', error);
@@ -161,6 +161,13 @@ export default function App() {
           setScreen('entry');
         }}
         onAdvice={() => showPlaceholder('Совет психолога — в релизе 2')}
+        onDelete={() => {
+          setEntries(entries.filter((e) => e.id !== currentEntryId));
+          deleteEntry(currentEntryId).catch(reportSaveError);
+          setCurrentEntryId(null);
+          // Always back to this sport's diary, even if the training was opened from the profile.
+          setScreen('diary');
+        }}
       />
     );
   }

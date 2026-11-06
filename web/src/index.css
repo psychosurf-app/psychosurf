@@ -1048,6 +1048,17 @@ h1 {
   padding-top: 32px;
 }
 
+.delete-link {
+  margin-top: 28px;
+  font-size: 15px;
+  color: var(--hint);
+}
+
+.btn-danger {
+  background: #c2481c;
+  color: #ffffff;
+}
+
 .advice-card {
   display: flex;
   align-items: center;

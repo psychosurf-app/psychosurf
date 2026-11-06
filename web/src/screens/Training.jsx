@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import raccoonPeek from '../assets/raccoon-peek.png';
 import BagIcon from '../components/BagIcon.jsx';
 import { useTelegramBackButton } from '../telegram.js';
@@ -34,8 +35,11 @@ function ChosenChips({ codes }) {
   );
 }
 
-export default function Training({ diary, entry, onBack, onEdit, onAdvice }) {
+export default function Training({ diary, entry, onBack, onEdit, onAdvice, onDelete }) {
   const telegramHandlesBack = useTelegramBackButton(onBack);
+  // Delete is a quiet link at the very bottom plus a confirmation sheet,
+  // so it is hard to press by accident (Liza, 2026-11-06).
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const bagKey = bagOf(entry);
   const bag = bagKey ? BAGS[bagKey] : null;
   const good = entry.tone === 'good';
@@ -105,7 +109,26 @@ export default function Training({ diary, entry, onBack, onEdit, onAdvice }) {
           </span>
           <span aria-label="Платная функция">🔒</span>
         </button>
+        <button type="button" className="btn-link delete-link" onClick={() => setConfirmDelete(true)}>
+          Удалить тренировку
+        </button>
       </div>
+
+      {confirmDelete && (
+        <div className="sheet-backdrop" onClick={() => setConfirmDelete(false)}>
+          <div className="sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+            <span className="sheet-handle" />
+            <h2 className="sheet-title">Удалить тренировку?</h2>
+            <p className="sheet-text">Её нельзя будет вернуть. Графики и улов пересчитаются без неё.</p>
+            <button type="button" className="btn-primary btn-danger" onClick={onDelete}>
+              Удалить
+            </button>
+            <button type="button" className="btn-link" onClick={() => setConfirmDelete(false)}>
+              Отмена
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
