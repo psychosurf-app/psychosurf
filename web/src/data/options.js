@@ -62,38 +62,42 @@ export const OPTIONS = [
 ];
 
 // Close emotions on the "Точно ничего?" screen (I-20, mockup G-13 v3), groups and signs by Yana.
-// "Усталость" (Сл-18) and "Опустошённость" (Сл-25) are dictionary options; the rest are proposed as Сл-60 — Сл-68 (question V-32).
+// "Усталость" (Сл-18) and "Опустошённость" (Сл-25) are dictionary options.
+// The other 9 are worded differently on screen but count as dictionary emotions (Yana, V-32, 2026-11-03):
+// `sameAs` is the dictionary code that advice groups (layer 2) will read.
+// Their own codes Сл-60 — Сл-68 stay only as stable ids for saved entries; they are NOT rows of the
+// "Словарь" sheet. New dictionary rows start from Сл-69.
 // `nothingOnly`: shown only on that screen, not in the usual emotion lists of step 2.
 export const NOTHING_GROUPS = [
   {
     title: 'Усталость',
     options: [
       { code: 'Сл-18', label: 'Усталость', kind: 'E-' },
-      { code: 'Сл-60', label: 'Как выжатый лимон', kind: 'E-', nothingOnly: true },
-      { code: 'Сл-61', label: 'Вялость, хочется спать', kind: 'E-', nothingOnly: true },
+      { code: 'Сл-60', label: 'Как выжатый лимон', kind: 'E-', nothingOnly: true, sameAs: 'Сл-20' },
+      { code: 'Сл-61', label: 'Вялость, хочется спать', kind: 'E-', nothingOnly: true, sameAs: 'Сл-21' },
     ],
   },
   {
     title: 'Пустота',
     options: [
       { code: 'Сл-25', label: 'Опустошённость', kind: 'E-' },
-      { code: 'Сл-62', label: 'Всё равно', kind: 'E-', nothingOnly: true },
-      { code: 'Сл-63', label: 'Скучно', kind: 'E-', nothingOnly: true },
-      { code: 'Сл-64', label: 'На автопилоте', kind: 'E-', nothingOnly: true },
+      { code: 'Сл-62', label: 'Всё равно', kind: 'E-', nothingOnly: true, sameAs: 'Сл-24' },
+      { code: 'Сл-63', label: 'Скучно', kind: 'E-', nothingOnly: true, sameAs: 'Сл-24' },
+      { code: 'Сл-64', label: 'На автопилоте', kind: 'E-', nothingOnly: true, sameAs: 'Сл-24' },
     ],
   },
   {
     title: 'Мысли не здесь',
     options: [
-      { code: 'Сл-65', label: 'Голова была занята другим', kind: 'E-', nothingOnly: true },
-      { code: 'Сл-66', label: 'Как будто не со мной', kind: 'E-', nothingOnly: true },
+      { code: 'Сл-65', label: 'Голова была занята другим', kind: 'E-', nothingOnly: true, sameAs: 'Сл-25' },
+      { code: 'Сл-66', label: 'Как будто не со мной', kind: 'E-', nothingOnly: true, sameAs: 'Сл-25' },
     ],
   },
   {
     title: 'Тихое спокойствие',
     options: [
-      { code: 'Сл-67', label: 'Спокойно, ровно', kind: 'E+', nothingOnly: true },
-      { code: 'Сл-68', label: 'Нормально, без всплесков', kind: 'E+', nothingOnly: true },
+      { code: 'Сл-67', label: 'Спокойно, ровно', kind: 'E+', nothingOnly: true, sameAs: 'Сл-15' },
+      { code: 'Сл-68', label: 'Нормально, без всплесков', kind: 'E+', nothingOnly: true, sameAs: 'Сл-15' },
     ],
   },
 ];
@@ -104,6 +108,9 @@ const NOTHING_OPTIONS = NOTHING_GROUPS.flatMap((g) => g.options).filter((o) => o
 export const OPTION_BY_CODE = Object.fromEntries(
   [...OPTIONS, ...NOTHING_OPTIONS].map((o) => [o.code, o]),
 );
+
+// Dictionary code an option counts as (for advice): its `sameAs` if any, else itself.
+export const dictionaryCode = (code) => OPTION_BY_CODE[code]?.sameAs ?? code;
 
 // Options for the usual lists of steps 2 and 3.
 export const optionsOfKind = (kind) => OPTIONS.filter((o) => o.kind === kind);

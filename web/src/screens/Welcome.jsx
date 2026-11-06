@@ -30,6 +30,10 @@ export default function Welcome({ onStart, onHowItWorks }) {
         <button type="button" className="btn-link" onClick={onHowItWorks}>
           Как это работает
         </button>
+        {/* One-line disclaimer, text by Yana (V-34, 2026-11-03). */}
+        <p className="welcome-disclaimer">
+          Психосёрф не ставит диагнозов и не заменяет консультацию специалиста.
+        </p>
       </div>
     </main>
   );

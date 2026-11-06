@@ -152,6 +152,13 @@ h1 {
   text-align: center;
 }
 
+.welcome-disclaimer {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--hint);
+}
+
 .raccoon-peek {
   display: block;
   width: 96px;
@@ -1695,4 +1702,15 @@ h1 {
   font-size: 15px;
   line-height: 1.45;
   color: var(--text-soft);
+}
+
+.about-disclaimer .article-sub {
+  margin-top: 0;
+  color: var(--text);
+}
+
+.about-disclaimer .article-list {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
 }

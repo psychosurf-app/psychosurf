@@ -98,15 +98,12 @@ export function diarySummary(list, allEntries) {
       const changes = window.slice(1).filter((e, i) => emotionPlus(e) !== emotionPlus(window[i])).length;
       if (changes >= SWING_CHANGES) candidates.push(phrase('D-9'));
     }
-
-    // D-10: every training in plus for both emotions and motivation.
-    if (sorted.every((e) => emotionPlus(e) && motivationPlus(e))) candidates.push(phrase('D-10'));
   }
 
   // Pairs that say the same thing are never shown together.
   const clashes = (a, b) => {
     const pair = [a.key, b.key].sort().join('+');
-    return ['D-4+D-5', 'D-5+D-7-worse', 'D-1+D-10'].includes(pair);
+    return ['D-4+D-5', 'D-5+D-7-worse'].includes(pair);
   };
   const isFree = (c, chosen) => !chosen.some((x) => clashes(x, c));
 

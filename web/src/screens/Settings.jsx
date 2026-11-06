@@ -27,7 +27,7 @@ export default function Settings({ displayName, onSaveName, onAbout, onBack }) {
           enterKeyHint="done"
           onChange={(e) => setValue(e.target.value)}
         />
-        <p className="settings-hint">Можно не заполнять: тогда будем звать тебя {DEFAULT_NAME}ом.</p>
+        <p className="settings-hint">Можно оставить пустым — тогда ты для нас {DEFAULT_NAME}.</p>
         <button
           type="button"
           className="btn-primary"
