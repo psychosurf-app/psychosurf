@@ -2,14 +2,21 @@ import { useEffect } from 'react';
 import TopBar from '../components/TopBar.jsx';
 import { ARTICLES } from '../data/articles.js';
 
-// One free article by Yana: burnout (G-22) or motivation (G-24, I-39).
+// One free article by Yana: burnout (G-22), motivation (G-24, I-39), emotions (G-27, I-41), trauma (G-25, I-40).
 
 // Paragraph with **bold** parts.
 function Rich({ text }) {
   return text.split('**').map((part, i) => (i % 2 ? <strong key={i}>{part}</strong> : part));
 }
 
-function ListItem({ text, plain }) {
+function ListItem({ text, plain, rich }) {
+  if (rich) {
+    return (
+      <li>
+        <Rich text={text} />
+      </li>
+    );
+  }
   const split = plain ? -1 : text.indexOf(' — ');
   if (split === -1) return <li>{text}</li>;
   return (
@@ -24,7 +31,11 @@ export default function Article({ articleKey, onBack }) {
   const article = ARTICLES[articleKey];
 
   // Articles are long: always start reading from the top.
-  useEffect(() => window.scrollTo(0, 0), [articleKey]);
+  // Braces matter: newer Chromium returns a Promise from scrollTo, and React would
+  // treat it as a cleanup function and crash when the article closes.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [articleKey]);
 
   return (
     <main className="screen article">
@@ -40,7 +51,7 @@ export default function Article({ articleKey, onBack }) {
           return (
             <ul key={i} className="article-list">
               {b.items.map((t) => (
-                <ListItem key={t} text={t} plain={b.plain} />
+                <ListItem key={t} text={t} plain={b.plain} rich={b.rich} />
               ))}
             </ul>
           );

@@ -101,9 +101,10 @@ export default function Profile({
         </button>
       </div>
 
-      {/* Free article by Yana (I-39). Later this spot can grow into a library of articles. */}
+      {/* Free articles by Yana (I-39, I-41). Later this spot can grow into a library of articles. */}
       <div className="profile-articles">
         <ArticleCard title="Что такое мотивация" onClick={() => onArticle('motivation')} />
+        <ArticleCard title="Эмоции в спорте" onClick={() => onArticle('emotions')} />
       </div>
     </main>
   );

@@ -4,6 +4,7 @@ import BagIcon from '../components/BagIcon.jsx';
 import { useTelegramBackButton } from '../telegram.js';
 import { OPTION_BY_CODE } from '../data/options.js';
 import { BAGS, bagOf } from '../lib/bags.js';
+import { ArticleCard } from '../components/ArticleCards.jsx';
 
 // One training, mockup G-15 v2 (idea I-27).
 
@@ -35,7 +36,7 @@ function ChosenChips({ codes }) {
   );
 }
 
-export default function Training({ diary, entry, onBack, onEdit, onAdvice, onDelete }) {
+export default function Training({ diary, entry, fearCard, onBack, onEdit, onAdvice, onDelete, onArticle }) {
   const telegramHandlesBack = useTelegramBackButton(onBack);
   // Delete is a quiet link at the very bottom plus a confirmation sheet,
   // so it is hard to press by accident (Liza, 2026-11-06).
@@ -94,6 +95,27 @@ export default function Training({ diary, entry, onBack, onEdit, onAdvice, onDel
       </div>
       {entry.motivationOptions.length > 0 && <ChosenChips codes={entry.motivationOptions} />}
       {entry.motivationNote && <p className="training-note">«{entry.motivationNote}»</p>}
+
+      {/* Soft card, not a separate screen (I-40, G-26 v1). The text is Yana's, approved 2026-11-03. */}
+      {fearCard && (
+        <section className="fear-card">
+          <div className="fear-head">
+            <span className="fear-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20">
+                <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
+              </svg>
+            </span>
+            <h2>Страх и тренировки</h2>
+          </div>
+          <p>
+            Ты уже несколько раз отмечаешь страх или тревогу после тренировки. Причин может быть
+            много, и мы не знаем точно, в чём твоя. Но иногда за страхом перед нагрузкой стоит травма:
+            тело её уже пережило, а голова — ещё не до конца. Если у тебя были травмы, эта статья для
+            тебя.
+          </p>
+          <ArticleCard title="Почитать про травмы" onClick={onArticle} />
+        </section>
+      )}
 
       <div className="training-bottom">
         <img className="raccoon-peek" src={raccoonPeek} alt="" />

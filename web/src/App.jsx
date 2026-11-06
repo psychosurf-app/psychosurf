@@ -10,6 +10,7 @@ import Compare from './screens/Compare.jsx';
 import RedFlag from './screens/RedFlag.jsx';
 import Article from './screens/Article.jsx';
 import { isRedFlag } from './lib/redFlag.js';
+import { showFearCard } from './lib/fearCard.js';
 import TopBar from './components/TopBar.jsx';
 import Settings from './screens/Settings.jsx';
 import About from './screens/About.jsx';
@@ -34,7 +35,7 @@ export default function App() {
   // Where "back" and "next" lead from the sport choice: onboarding or the profile.
   const [sportsFrom, setSportsFrom] = useState('welcome');
   const [placeholder, setPlaceholder] = useState('');
-  // Which article is open and where to return: 'redflag', 'diary' or 'profile'.
+  // Which article is open and where to return: 'redflag', 'diary', 'profile' or 'training'.
   const [article, setArticle] = useState('burnout');
   const [articleFrom, setArticleFrom] = useState('diary');
 
@@ -155,6 +156,12 @@ export default function App() {
       <Training
         diary={currentDiary}
         entry={entries.find((e) => e.id === currentEntryId)}
+        fearCard={showFearCard(entries, entries.find((e) => e.id === currentEntryId))}
+        onArticle={() => {
+          setArticle('trauma');
+          setArticleFrom('training');
+          setScreen('article');
+        }}
         onBack={() => setScreen(returnTo)}
         onEdit={() => {
           setEditing(true);

@@ -1048,6 +1048,50 @@ h1 {
   padding-top: 32px;
 }
 
+.fear-card {
+  margin-top: 24px;
+  padding: 16px;
+  border-radius: 22px;
+  background: var(--card);
+}
+
+.fear-card p {
+  margin: 0 0 14px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--text-soft);
+}
+
+.fear-card .article-card {
+  margin: 0;
+  background: #cdd0d3;
+}
+
+.fear-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.fear-head h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.fear-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #ffffff;
+}
+
 .delete-link {
   margin-top: 28px;
   font-size: 15px;
