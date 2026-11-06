@@ -1,7 +1,7 @@
 import TopBar from '../components/TopBar.jsx';
 
 // "О приложении", final text approved by Yana (V-35, 2026-11-03), includes idea I-35.
-// The line about both authors being athletes waits for V-36.
+// Line about both authors being athletes: variant 2 (V-36, Liza 2026-11-06).
 const IMPORTANT = [
   'Психосёрф — инструмент для самонаблюдения. Он помогает замечать своё состояние после тренировок и не является медицинской или психологической помощью.',
   'Приложение не ставит диагнозов и не оценивает здоровье.',
@@ -28,6 +28,10 @@ export default function About({ onBack }) {
         Автор методики и текстов: Яна Блеер, спортивный психолог.
         <br />
         Разработка: Елизавета Рыбак.
+      </p>
+      <p className="article-p">
+        Мы обе — действующие спортсменки и выступаем на соревнованиях по вейксёрфингу. Поэтому
+        знаем эмоции после тренировок не понаслышке.
       </p>
 
       <section className="about-disclaimer">
