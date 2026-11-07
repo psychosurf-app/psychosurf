@@ -655,6 +655,23 @@ h1 {
   padding-top: 32px;
 }
 
+/* Z-6: while a note is being typed, pin the bottom button right above the
+   keyboard. --kb-inset comes from lib/keyboard.js (0 when the phone shrinks
+   the page itself). The raccoon hides to save space and comes back after. */
+.entry:has(.note textarea:focus) .entry-bottom {
+  position: sticky;
+  bottom: var(--kb-inset, 0px);
+  z-index: 5;
+  margin-left: -16px;
+  margin-right: -16px;
+  padding: 10px 16px;
+  background: var(--bg);
+}
+
+.entry:has(.note textarea:focus) .entry-bottom .raccoon-peek {
+  display: none;
+}
+
 .tone-card {
   display: flex;
   align-items: center;

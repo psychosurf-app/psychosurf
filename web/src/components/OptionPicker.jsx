@@ -76,6 +76,12 @@ export function NoteField({ value, onChange }) {
         rows={4}
         maxLength={NOTE_LIMIT}
         value={value}
+        // Z-6: after the keyboard slides in (~300 ms), keep the text in the
+        // middle of what is still visible, so the pinned button doesn't cover it.
+        onFocus={(e) => {
+          const field = e.target;
+          setTimeout(() => field.scrollIntoView({ block: 'center', behavior: 'smooth' }), 350);
+        }}
         onChange={(e) => onChange(e.target.value)}
       />
       <p className="note-private">🔒 Заметку видишь только ты</p>
