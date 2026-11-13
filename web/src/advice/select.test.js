@@ -100,3 +100,10 @@ test('note words add +1 inside the winning tone but do not flip it', () => {
 test('"really nothing" gives no advice', () => {
   assert.equal(selectAdvice(entry({ tone: 'numb', emotions: [] }), 'water'), null);
 });
+
+test('intro line uses the accusative case', async () => {
+  const { listEmotions } = await import('./view.js');
+  assert.equal(listEmotions(['Сл-24', 'Сл-25']), 'апатию и опустошённость');
+  assert.equal(listEmotions(['Сл-1', 'Сл-2', 'Сл-35']), 'отличное настроение, эйфорию и агрессию');
+  assert.equal(listEmotions(['Сл-1', 'Сл-2', 'Сл-6', 'Сл-7']), 'отличное настроение, эйфорию, азарт и ещё 1');
+});

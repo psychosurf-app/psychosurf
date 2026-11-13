@@ -1786,3 +1786,27 @@ h1 {
   font-size: 15px;
   line-height: 1.45;
 }
+
+/* Advice of one training (G-23 v1), test build with advice only (R-39) */
+.advice-intro {
+  margin: 4px 0 18px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--hint);
+}
+
+.advice-part + .advice-part {
+  margin-top: 8px;
+}
+
+.advice-final {
+  margin: 18px 0 20px;
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 700;
+  color: var(--teal);
+}
+
+.advice-screen .article-card {
+  margin-bottom: 12px;
+}
