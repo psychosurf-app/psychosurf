@@ -1,12 +1,15 @@
 # Builds the app from web/ and publishes it to GitHub Pages
 # after every push to main. Result: https://psychosurf-app.github.io/psychosurf/
 # No secrets here: the test build has no server and no bot token (R-33).
+# Automatic checks (npm test) run first: if one fails, nothing is published.
+# On a pull request only the checks and the build run, nothing is published.
 
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -15,7 +18,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -32,12 +35,15 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
       - run: npm ci
+      - run: npm test
       - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: web/dist
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:

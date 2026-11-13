@@ -15,6 +15,7 @@ import TopBar from './components/TopBar.jsx';
 import Settings from './screens/Settings.jsx';
 import About from './screens/About.jsx';
 import { deleteEntry, loadUserData, saveDiaries, saveEntry, saveProfile } from './storage/index.js';
+import { withAdvicePick } from './advice/index.js';
 
 // Logs a failed save. A visible "could not save" message comes later.
 const reportSaveError = (error) => console.error('Save failed', error);
@@ -138,7 +139,9 @@ export default function App() {
         diaryEntries={entries.filter((e) => e.diaryKey === currentDiary.key)}
         initial={editing ? entries.find((e) => e.id === currentEntryId) : null}
         onCancel={() => setScreen(editing ? 'training' : returnTo)}
-        onSave={(entry) => {
+        onSave={(saved) => {
+          // Which advice pieces this training gets (R-38); only in the build with advice.
+          const entry = withAdvicePick(saved, currentDiary, entries);
           // New entry is added; an edited one replaces the old version.
           const next = [...entries.filter((e) => e.id !== entry.id), entry];
           setEntries(next);
