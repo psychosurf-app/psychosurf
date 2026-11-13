@@ -15,7 +15,8 @@ import TopBar from './components/TopBar.jsx';
 import Settings from './screens/Settings.jsx';
 import About from './screens/About.jsx';
 import { deleteEntry, loadUserData, saveDiaries, saveEntry, saveProfile } from './storage/index.js';
-import { withAdvicePick } from './advice/index.js';
+import { ADVICE_ENABLED, POOL, withAdvicePick } from './advice/index.js';
+import Advice from './screens/Advice.jsx';
 
 // Logs a failed save. A visible "could not save" message comes later.
 const reportSaveError = (error) => console.error('Save failed', error);
@@ -36,7 +37,7 @@ export default function App() {
   // Where "back" and "next" lead from the sport choice: onboarding or the profile.
   const [sportsFrom, setSportsFrom] = useState('welcome');
   const [placeholder, setPlaceholder] = useState('');
-  // Which article is open and where to return: 'redflag', 'diary', 'profile' or 'training'.
+  // Which article is open and where to return: 'redflag', 'diary', 'profile', 'training' or 'advice'.
   const [article, setArticle] = useState('burnout');
   const [articleFrom, setArticleFrom] = useState('diary');
 
@@ -170,7 +171,26 @@ export default function App() {
           setEditing(true);
           setScreen('entry');
         }}
-        onAdvice={() => showPlaceholder('Совет психолога — в релизе 2')}
+        adviceOpen={ADVICE_ENABLED}
+        onAdvice={() => {
+          if (!ADVICE_ENABLED) {
+            showPlaceholder('Совет психолога — в релизе 2');
+            return;
+          }
+          // Trainings saved before advice was on get their pick now, once (R-38).
+          const entry = entries.find((e) => e.id === currentEntryId);
+          const withPick = entry.advicePick ? entry : withAdvicePick(entry, currentDiary, entries);
+          if (!withPick.advicePick) {
+            // "Really nothing": no emotions to advise on (test build note, not Yana's text).
+            showPlaceholder('Для тренировки без эмоций совета нет');
+            return;
+          }
+          if (withPick !== entry) {
+            setEntries(entries.map((e) => (e.id === entry.id ? withPick : e)));
+            saveEntry(withPick).catch(reportSaveError);
+          }
+          setScreen('advice');
+        }}
         onDelete={() => {
           setEntries(entries.filter((e) => e.id !== currentEntryId));
           deleteEntry(currentEntryId).catch(reportSaveError);
@@ -239,6 +259,25 @@ export default function App() {
         onContinue={() => setScreen('training')}
       />
     );
+  }
+
+  if (screen === 'advice') {
+    const entry = entries.find((e) => e.id === currentEntryId);
+    if (entry?.advicePick) {
+      return (
+        <Advice
+          diary={currentDiary}
+          entry={entry}
+          pool={POOL}
+          onBack={() => setScreen('training')}
+          onArticle={(key) => {
+            setArticle(key);
+            setArticleFrom('advice');
+            setScreen('article');
+          }}
+        />
+      );
+    }
   }
 
   if (screen === 'article') {

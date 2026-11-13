@@ -11,13 +11,15 @@
 //   Advice texts live only in the separate test build for Yana and testers (R-39).
 
 import { selectAdvice } from './select.js';
+import { POOL } from './pool.js';
 import { dictionaryCode } from '../data/options.js';
 import { sportGroup } from '../data/sports.js';
 
-// On only in the build with advice (R-39): built with VITE_ADVICE=1.
+// On only in the build with advice (R-39): built with VITE_ADVICE=1 and pool.json.
 // In the public build it stays off, so no advice is "remembered" as read
 // while the person cannot see it (the variant circles would drift).
-export const ADVICE_ENABLED = import.meta.env?.VITE_ADVICE === '1';
+export const ADVICE_ENABLED = import.meta.env?.VITE_ADVICE === '1' && POOL !== null;
+export { POOL };
 
 // Earlier trainings of this person (all sports), oldest first.
 const earlierThan = (entry, entries) =>

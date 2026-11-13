@@ -36,7 +36,7 @@ function ChosenChips({ codes }) {
   );
 }
 
-export default function Training({ diary, entry, fearCard, onBack, onEdit, onAdvice, onDelete, onArticle }) {
+export default function Training({ diary, entry, fearCard, adviceOpen, onBack, onEdit, onAdvice, onDelete, onArticle }) {
   const telegramHandlesBack = useTelegramBackButton(onBack);
   // Delete is a quiet link at the very bottom plus a confirmation sheet,
   // so it is hard to press by accident (Liza, 2026-11-06).
@@ -129,7 +129,14 @@ export default function Training({ diary, entry, fearCard, onBack, onEdit, onAdv
             <span className="advice-title">Совет психолога</span>
             <span className="advice-sub">По твоим эмоциям и мотивации на этой тренировке</span>
           </span>
-          <span aria-label="Платная функция">🔒</span>
+          {/* Open in the test build with advice (R-39), locked everywhere else. */}
+          {adviceOpen ? (
+            <span className="row-arrow" aria-hidden="true">
+              ›
+            </span>
+          ) : (
+            <span aria-label="Платная функция">🔒</span>
+          )}
         </button>
         <button type="button" className="btn-link delete-link" onClick={() => setConfirmDelete(true)}>
           Удалить тренировку
