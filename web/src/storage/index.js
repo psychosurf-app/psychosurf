@@ -9,8 +9,10 @@
 
 import { createMemoryAdapter } from './memoryAdapter.js';
 import { createKeyValueAdapter } from './keyValueAdapter.js';
+import { createServerAdapter } from './serverAdapter.js';
+import { loadWithMove } from './moveToServer.js';
 import { browserStore } from './browserStore.js';
-import { cloudStorage } from '../telegram.js';
+import { cloudStorage, isInTelegram, getInitData } from '../telegram.js';
 import { isDemo, DEMO_DIARIES, DEMO_ENTRIES } from '../lib/demo.js';
 
 // Format version stamped on every saved record (decision R-33, rule 3).
@@ -18,14 +20,24 @@ import { isDemo, DEMO_DIARIES, DEMO_ENTRIES } from '../lib/demo.js';
 // `upgrade` below how to turn the old shape into the new one.
 export const SCHEMA_VERSION = 1;
 
-// Where data lives now (test build, no server):
-// - inside Telegram: Telegram CloudStorage, synced across the user's devices;
+// Address of our server, set when building: VITE_API_URL=https://… npm run build.
+// Empty = no server yet, the app works as before.
+const API_URL = import.meta.env?.VITE_API_URL ?? '';
+
+// Where data lives:
+// - inside Telegram with a server address: on our server (release 2); on the
+//   first start the old diary is moved there from CloudStorage (moveToServer.js);
+// - inside Telegram without a server: Telegram CloudStorage, synced across devices;
 // - in a normal browser (development): localStorage of that browser;
 // - demo mode (?demo in the address): memory only, so demo data never
 //   mixes with a real user's diary.
-// Release 2: a server adapter replaces the Telegram one here.
 function pickAdapter() {
   if (isDemo) return createMemoryAdapter({ diaries: DEMO_DIARIES, entries: DEMO_ENTRIES });
+  if (API_URL && isInTelegram) {
+    const server = createServerAdapter({ apiUrl: API_URL, initData: getInitData() });
+    const cloud = cloudStorage && createKeyValueAdapter(cloudStorage);
+    return { ...server, load: () => loadWithMove({ server, cloud, store: cloudStorage }) };
+  }
   return createKeyValueAdapter(cloudStorage ?? browserStore);
 }
 
