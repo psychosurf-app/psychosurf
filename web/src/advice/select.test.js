@@ -157,3 +157,10 @@ test('every variant id in the catalog exists in the pool, if the pool is here', 
   const missing = [...E, ...M].flatMap((g) => g.variants).filter((id) => !POOL.pieces[id]);
   assert.deepEqual(missing, []);
 });
+
+test('a word in the note decides a tie inside the tone (R-38)', async () => {
+  const { noteCodes } = await import('./noteMatch.js');
+  const e = entry({ emotions: ['Сл-3', 'Сл-1'] }); // Гордость x1 + Подъём x1 -> Гордость
+  assert.equal(selectAdvice(e, 'water', [], noteCodes('')).advices[0].group, 'pride');
+  assert.equal(selectAdvice(e, 'water', [], noteCodes('летала весь сет')).advices[0].group, 'lift');
+});

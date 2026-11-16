@@ -11,6 +11,7 @@
 //   Advice texts live only in the separate test build for Yana and testers (R-39).
 
 import { selectAdvice } from './select.js';
+import { noteCodes } from './noteMatch.js';
 import { POOL } from './pool.js';
 import { dictionaryCode } from '../data/options.js';
 import { sportGroup } from '../data/sports.js';
@@ -38,6 +39,8 @@ export function withAdvicePick(entry, diary, entries) {
     { ...entry, emotions: (entry.emotions ?? []).map(dictionaryCode) },
     sportGroup(diary.code),
     history,
+    // Words from the note to emotions add +1 to their group (R-4, R-38).
+    noteCodes(entry.emotionNote),
   );
   return { ...entry, advicePick: pick };
 }
