@@ -1,6 +1,7 @@
 import { ArticleCard } from '../components/ArticleCards.jsx';
 import raccoonPeek from '../assets/raccoon-peek.png';
 import Sparkline from '../components/Sparkline.jsx';
+import DailyCard from '../components/DailyCard.jsx';
 import { countText, daysAgoText } from '../lib/format.js';
 import { emotionPoint, sortEntries } from '../lib/points.js';
 
@@ -17,6 +18,8 @@ export default function Profile({
   onCompare,
   onArticle,
   onSettings,
+  daily,
+  onDailyOpen,
 }) {
   const total = entries.length;
 
@@ -47,8 +50,14 @@ export default function Profile({
         </button>
       </header>
 
-      <h2 className="section-title">Твои дневники</h2>
-      <p className="section-hint">Нажми&nbsp;+, чтобы записать тренировку</p>
+      {/* "Твои дневники" on the left, "Приём дня" on the right (G-30 v2, R-40). */}
+      <div className="diaries-head">
+        <div className="diaries-head-text">
+          <h2 className="section-title">Твои дневники</h2>
+          <p className="section-hint">Нажми&nbsp;+, чтобы записать тренировку</p>
+        </div>
+        <DailyCard daily={daily} onOpen={onDailyOpen} />
+      </div>
 
       <div className="diary-list">
         {diaries.map((diary) => {

@@ -15,6 +15,8 @@ import TopBar from './components/TopBar.jsx';
 import Settings from './screens/Settings.jsx';
 import About from './screens/About.jsx';
 import { deleteEntry, loadUserData, saveDiaries, saveEntry, saveProfile } from './storage/index.js';
+import { dailyCard } from './daily/index.js';
+import { todayIso } from './lib/format.js';
 import { ADVICE_ENABLED, POOL, withAdvicePick } from './advice/index.js';
 import Advice from './screens/Advice.jsx';
 
@@ -47,7 +49,14 @@ export default function App() {
     loadUserData()
       .then((data) => {
         if (cancelled) return;
-        setProfile(data.profile);
+        // "Приём дня" counts days from the first time the app was opened (R-40).
+        if (data.profile.dailyStart) {
+          setProfile(data.profile);
+        } else {
+          const next = { ...data.profile, dailyStart: todayIso() };
+          setProfile(next);
+          saveProfile(next).catch(reportSaveError);
+        }
         setDiaries(data.diaries);
         setEntries(data.entries);
         if (data.diaries.length > 0) setScreen('profile');
@@ -123,6 +132,14 @@ export default function App() {
           setScreen('sports');
         }}
         onCompare={() => setScreen('compare')}
+        daily={dailyCard(profile, todayIso())}
+        onDailyOpen={() => {
+          const today = todayIso();
+          if (profile.dailyOpened === today) return;
+          const next = { ...profile, dailyOpened: today };
+          setProfile(next);
+          saveProfile(next).catch(reportSaveError);
+        }}
         onArticle={(key) => {
           setArticle(key);
           setArticleFrom('profile');

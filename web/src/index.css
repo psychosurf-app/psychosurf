@@ -1810,3 +1810,141 @@ h1 {
 .advice-screen .article-card {
   margin-bottom: 12px;
 }
+
+/* "Приём дня" on the main screen (G-30 v2, G-31 v2, R-40) */
+.diaries-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.diaries-head-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.diaries-head .section-hint {
+  margin: 0;
+}
+
+.daily-card {
+  flex: 0 0 46%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 112px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 22px;
+  background: linear-gradient(125deg, #e0602b 0%, #e0602b 44%, #0a7c76 56%, #0a7c76 100%);
+  color: #ffffff;
+  text-align: left;
+  font: inherit;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+button.daily-card {
+  cursor: pointer;
+}
+
+.daily-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.daily-name {
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.daily-dot {
+  flex: none;
+  width: 11px;
+  height: 11px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.daily-sub {
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.daily-hint {
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.daily-badge {
+  align-self: flex-start;
+  max-width: 100%;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.28);
+  font-size: 11px;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.daily-pill {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: linear-gradient(125deg, #e0602b 0%, #e0602b 44%, #0a7c76 56%, #0a7c76 100%);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.daily-text {
+  margin: 0 0 14px;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.daily-quote-mark {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  height: 40px;
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--orange);
+}
+
+.daily-quote {
+  margin: 8px 0 16px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.daily-author {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--teal);
+}
+
+.daily-role {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: var(--hint);
+}
+
+.daily-sheet .btn-primary {
+  margin-top: 20px;
+}
+
+.daily-next {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: var(--hint);
+}
