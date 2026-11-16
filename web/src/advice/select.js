@@ -81,7 +81,7 @@ function lastGroupOfTone(history, tone) {
  *                emotions are dictionary codes (use dictionaryCode() for "Точно ничего?" words)
  * @param sportGroup  group of the sport (data/sports.js), 'neutral' for own sport
  * @param history     picks of earlier trainings, oldest first
- * @param noteCodes   dictionary codes found in the notes (keyword matching, later)
+ * @param noteCodes   dictionary codes found in the note to emotions (noteMatch.js)
  * @returns pick to save in the entry, or null if there is nothing to advise on
  */
 export function selectAdvice(entry, sportGroup, history = [], noteCodes = []) {
