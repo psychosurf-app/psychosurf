@@ -21,8 +21,9 @@ export const DAILY_OPEN = ADVICE_ENABLED && Boolean(POOL?.daily?.order?.length);
 
 // Today's card for this person, or { locked: true }.
 // `opened`: the person already opened today's card (no white dot).
-export function dailyCard(profile, todayIso) {
-  if (!DAILY_OPEN) return { locked: true };
+// `access` from access/index.js: after the trial without a subscription it is locked (V-47).
+export function dailyCard(profile, todayIso, access = { full: true }) {
+  if (!DAILY_OPEN || !access.full) return { locked: true };
   const { order, cards } = POOL.daily;
   const i = cardIndex(profile.dailyStart ?? todayIso, todayIso, order.length);
   const id = order[i];

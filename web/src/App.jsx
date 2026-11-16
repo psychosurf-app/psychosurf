@@ -16,6 +16,7 @@ import Settings from './screens/Settings.jsx';
 import About from './screens/About.jsx';
 import { deleteEntry, loadUserData, saveDiaries, saveEntry, saveProfile } from './storage/index.js';
 import { dailyCard } from './daily/index.js';
+import { currentAccess } from './access/index.js';
 import { todayIso } from './lib/format.js';
 import { ADVICE_ENABLED, POOL, withAdvicePick } from './advice/index.js';
 import Advice from './screens/Advice.jsx';
@@ -51,7 +52,6 @@ export default function App() {
   // Load saved data at start (and on "try again"). Someone with diaries goes straight to the profile.
   useEffect(() => {
     let cancelled = false;
-    setLoadError(false);
     loadUserData()
       .then((data) => {
         if (cancelled) return;
@@ -107,7 +107,10 @@ export default function App() {
       <main className="screen load-error">
         <h1 className="page-title">Не получилось открыть дневник</h1>
         <p className="section-hint">Проверь интернет и попробуй ещё раз. Твои записи никуда не делись.</p>
-        <button type="button" className="btn-primary" onClick={() => setLoadAttempt((n) => n + 1)}>
+        <button type="button" className="btn-primary" onClick={() => {
+            setLoadError(false);
+            setLoadAttempt((n) => n + 1);
+          }}>
           Попробовать ещё раз
         </button>
       </main>
@@ -154,7 +157,7 @@ export default function App() {
           setScreen('sports');
         }}
         onCompare={() => setScreen('compare')}
-        daily={dailyCard(profile, todayIso())}
+        daily={dailyCard(profile, todayIso(), currentAccess(profile, entries, todayIso()))}
         onDailyOpen={() => {
           const today = todayIso();
           if (profile.dailyOpened === today) return;
@@ -308,6 +311,7 @@ export default function App() {
           diary={currentDiary}
           entry={entry}
           pool={POOL}
+          locked={!currentAccess(profile, entries, todayIso()).full}
           onBack={() => setScreen('training')}
           onArticle={(key) => {
             setArticle(key);
