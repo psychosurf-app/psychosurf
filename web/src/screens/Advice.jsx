@@ -76,7 +76,10 @@ export default function Advice({ diary, entry, pool, onBack, onArticle }) {
       )}
 
       <Part title={PART_TITLES.part1} blocks={current.part1} />
+      {/* Orange block about a specialist: free, above the lock (I-45, V-46, column N). */}
+      {current.flag && <div className="flag-callout">{current.flag}</div>}
       <Part title={PART_TITLES.part2} blocks={current.part2} />
+      {view.part3 && view.motivationLine && <p className="advice-intro">{view.motivationLine}</p>}
       <Part title={view.part3Title} blocks={view.part3} />
 
       {view.finalLine && <p className="advice-final">{view.finalLine}</p>}

@@ -2,7 +2,7 @@
 // No texts are written here: everything comes from Yana's pool or her
 // approved line templates (I-50). Nothing is generated (R-8).
 
-import { EMOTION_GROUPS } from './catalog.js';
+import { EMOTION_GROUPS, MOTIVATION_GROUPS, MOTIVATION_TIE_REASONS } from './catalog.js';
 import { OPTION_BY_CODE, dictionaryCode } from '../data/options.js';
 
 export const PART_TITLES = { part1: 'Что происходит', part2: 'На что обратить внимание' };
@@ -31,13 +31,19 @@ function label(code) {
   return [acc, ...rest].join(' ');
 }
 
-// "a", "a и b", "a, b и c"; more than 3 -> first 3 + "и ещё N" (wording pending, V-46).
+// "a", "a и b", "a, b и c": all marked emotions, no limit (V-46, Yana 2026-11-13).
+const joinRu = (labels) =>
+  labels.length <= 1 ? (labels[0] ?? '') : `${labels.slice(0, -1).join(', ')} и ${labels.at(-1)}`;
+
 export function listEmotions(codes) {
-  const labels = codes.map(label).filter(Boolean);
-  if (labels.length === 0) return '';
-  if (labels.length > 3) return `${labels.slice(0, 3).join(', ')} и ещё ${labels.length - 3}`;
-  if (labels.length === 1) return labels[0];
-  return `${labels.slice(0, -1).join(', ')} и ${labels.at(-1)}`;
+  return joinRu(codes.map(label).filter(Boolean));
+}
+
+// Motivation options go in quotes as they are: they are phrases, not nouns (I-51).
+export function listMotivation(codes) {
+  return joinRu(
+    codes.map((c) => OPTION_BY_CODE[c]?.label).filter(Boolean).map((l) => `«${l.toLowerCase()}»`),
+  );
 }
 
 // Marked emotions split by tone and by group.
@@ -74,6 +80,34 @@ export function introLine(entry, pick) {
   return `Ты отметил ${listEmotions(own)}. Похожие чувства мы объединяем в состояние «${name}». Каждый раз совет раскрывает его с новой стороны.`;
 }
 
+const motivationGroupById = Object.fromEntries(MOTIVATION_GROUPS.map((g) => [g.id, g]));
+const motivationGroupOfCode = Object.fromEntries(
+  MOTIVATION_GROUPS.flatMap((g) => g.options.map((c) => [c, g])),
+);
+
+// The small line above part 3 (I-51, texts approved by Yana 2026-11-13).
+// Shown whenever part 3 comes from a motivation group. On a tie between two
+// groups Yana adds a reason why we talk about this one; until her reason for
+// that group is approved, the line names only the options of the chosen group.
+export function motivationLine(entry, pick) {
+  const group = motivationGroupById[pick.motivationGroup];
+  if (!group || !pick.part3) return null;
+  const options = (entry.motivationOptions ?? []).filter(
+    (c) => motivationGroupOfCode[c]?.sign === entry.motivation,
+  );
+  const counts = new Map();
+  for (const c of options) {
+    const g = motivationGroupOfCode[c];
+    counts.set(g.id, (counts.get(g.id) ?? 0) + 1);
+  }
+  const max = Math.max(...counts.values());
+  const tie = [...counts.values()].filter((n) => n === max).length > 1;
+  const reason = MOTIVATION_TIE_REASONS[group.id];
+  const shown = tie && !reason ? options.filter((c) => motivationGroupOfCode[c].id === group.id) : options;
+  const line = `Про мотивацию ты отметил ${listMotivation(shown)}. Такой настрой мы называем «${group.name}».`;
+  return tie && reason ? `${line} Сегодня поговорим про «${group.name}»: ${reason}` : line;
+}
+
 // Everything the screen needs, read from the pool by ids.
 export function adviceView(entry, pick, pool) {
   const piece = (id) => (id ? pool.pieces[id] ?? {} : {});
@@ -86,6 +120,7 @@ export function adviceView(entry, pick, pool) {
       groupName: a.special ? null : groupById[a.group].name,
       part1: p.part1 ?? null,
       part2: p.part2 ?? null,
+      flag: p.flag ?? null,
       articles: p.articles ?? [],
     };
   });
@@ -100,6 +135,7 @@ export function adviceView(entry, pick, pool) {
 
   return {
     intro: introLine(entry, pick),
+    motivationLine: special ? null : motivationLine(entry, pick),
     tabs,
     part3: part3Piece.part3 ?? null,
     part3Title: ending?.heading ?? 'Как двигаться дальше',

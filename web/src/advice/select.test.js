@@ -105,5 +105,55 @@ test('intro line uses the accusative case', async () => {
   const { listEmotions } = await import('./view.js');
   assert.equal(listEmotions(['Сл-24', 'Сл-25']), 'апатию и опустошённость');
   assert.equal(listEmotions(['Сл-1', 'Сл-2', 'Сл-35']), 'отличное настроение, эйфорию и агрессию');
-  assert.equal(listEmotions(['Сл-1', 'Сл-2', 'Сл-6', 'Сл-7']), 'отличное настроение, эйфорию, азарт и ещё 1');
+  // all marked emotions, no "и ещё N" (V-46)
+  assert.equal(listEmotions(['Сл-1', 'Сл-2', 'Сл-6', 'Сл-7']), 'отличное настроение, эйфорию, азарт и заряженность');
+});
+
+test('motivation tie follows Yana\'s order (V-48)', () => {
+  // Тянет: Интерес x1 + Долг x1 -> Долг
+  const p = selectAdvice(entry({ emotions: ['Сл-1'], motivationOptions: ['Сл-43', 'Сл-49'] }), 'water');
+  assert.equal(p.motivationGroup, 'duty');
+  // Не тянет: Скука x1 + Через не хочу x1 -> Через не хочу
+  const q = selectAdvice(
+    entry({ emotions: ['Сл-1'], motivation: 'not_forward', motivationOptions: ['Сл-50', 'Сл-52'] }),
+    'water',
+  );
+  assert.equal(q.motivationGroup, 'reluctant');
+});
+
+test('Долг has its new variants (С-16.2 — С-16.5)', () => {
+  const e = entry({ emotions: ['Сл-1'], motivationOptions: ['Сл-49'] });
+  const picks = play(Array(6).fill(e)).map((p) => p.part3);
+  assert.deepEqual(picks, ['С-16', 'С-16.2', 'С-16.3', 'С-16.4', 'С-16.5', 'С-16']);
+});
+
+test('advice no longer carries "Приём дня" (R-38 item 7)', () => {
+  const p = selectAdvice(entry({ emotions: ['Сл-1'] }), 'water');
+  assert.equal('tip' in p, false);
+  assert.equal(p.slots.includes('tip'), false);
+});
+
+test('line above part 3 (I-51)', async () => {
+  const { motivationLine } = await import('./view.js');
+  const one = entry({ emotions: ['Сл-1'], motivation: 'not_forward', motivationOptions: ['Сл-56', 'Сл-57'] });
+  assert.equal(
+    motivationLine(one, selectAdvice(one, 'water')),
+    'Про мотивацию ты отметил «желание бросить» и «' +
+      (await import('../data/options.js')).OPTION_BY_CODE['Сл-57'].label.toLowerCase() +
+      '». Такой настрой мы называем «Хочу бросить».',
+  );
+  // tie without an approved reason: only the options of the chosen group
+  const tie = entry({ emotions: ['Сл-1'], motivationOptions: ['Сл-43', 'Сл-49'] });
+  assert.equal(
+    motivationLine(tie, selectAdvice(tie, 'water')),
+    'Про мотивацию ты отметил «обязан продолжать ради цели». Такой настрой мы называем «Долг».',
+  );
+});
+
+test('every variant id in the catalog exists in the pool, if the pool is here', async () => {
+  const { POOL } = await import('./pool.js').catch(() => ({ POOL: null }));
+  if (!POOL) return;
+  const { EMOTION_GROUPS: E, MOTIVATION_GROUPS: M } = await import('./catalog.js');
+  const missing = [...E, ...M].flatMap((g) => g.variants).filter((id) => !POOL.pieces[id]);
+  assert.deepEqual(missing, []);
 });

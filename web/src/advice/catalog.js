@@ -36,26 +36,33 @@ export const EMOTION_GROUPS = [
 ];
 
 // Motivation groups, layer 2 (part 3 of an advice).
-// No importance order from Yana yet: `rank` follows the sheet order and is
-// only used when two groups have the same number of marked options.
+// `rank`: Yana's order when two groups of the same sign have the same number
+// of marked options (V-48, 2026-11-13). "Тянет": Долг -> Цель -> Интерес.
+// "Не тянет": Хочу бросить -> Через не хочу -> Скука -> Потолок.
+// `name`: what the user sees (I-51).
 export const MOTIVATION_GROUPS = [
-  { id: 'interest', name: 'Интерес', sign: 'forward', rank: 1,
-    options: ['Сл-41', 'Сл-43', 'Сл-44', 'Сл-45'],
-    variants: ['С-14', 'С-14.2', 'С-14.3', 'С-14.4', 'С-14.5'] },
+  { id: 'duty', name: 'Долг', sign: 'forward', rank: 1,
+    options: ['Сл-49'], variants: ['С-16', 'С-16.2', 'С-16.3', 'С-16.4', 'С-16.5'] },
   { id: 'goal', name: 'Цель', sign: 'forward', rank: 2,
     options: ['Сл-42', 'Сл-46', 'Сл-47', 'Сл-48'],
     variants: ['С-15', 'С-15.2', 'С-15.3', 'С-15.4', 'С-15.5'] },
-  { id: 'duty', name: 'Долг', sign: 'forward', rank: 3,
-    options: ['Сл-49'], variants: ['С-16'] },
-  { id: 'boredom', name: 'Скука', sign: 'not_forward', rank: 4,
-    options: ['Сл-50', 'Сл-51', 'Сл-55'], variants: ['С-17'] },
+  { id: 'interest', name: 'Интерес', sign: 'forward', rank: 3,
+    options: ['Сл-41', 'Сл-43', 'Сл-44', 'Сл-45'],
+    variants: ['С-14', 'С-14.2', 'С-14.3', 'С-14.4', 'С-14.5'] },
+  { id: 'quit', name: 'Хочу бросить', sign: 'not_forward', rank: 4,
+    options: ['Сл-56', 'Сл-57'], variants: ['С-19', 'С-19.2', 'С-19.3'] },
   { id: 'reluctant', name: 'Через не хочу', sign: 'not_forward', rank: 5,
-    options: ['Сл-52', 'Сл-53', 'Сл-54'], variants: ['С-18'] },
-  { id: 'quit', name: 'Хочу бросить', sign: 'not_forward', rank: 6,
-    options: ['Сл-56', 'Сл-57'], variants: ['С-19'] },
+    options: ['Сл-52', 'Сл-53', 'Сл-54'], variants: ['С-18', 'С-18.2', 'С-18.3'] },
+  { id: 'boredom', name: 'Скука', sign: 'not_forward', rank: 6,
+    options: ['Сл-50', 'Сл-51', 'Сл-55'], variants: ['С-17', 'С-17.2', 'С-17.3'] },
   { id: 'ceiling', name: 'Потолок', sign: 'not_forward', rank: 7,
     options: ['Сл-58', 'Сл-59'], variants: ['С-20'] },
 ];
+
+// Why this group is talked about when two motivation groups tie (I-51, part 2).
+// Only lines approved by Yana go here (R-8). Empty for now: the drafts for
+// Долг and Хочу бросить are still being finished with Yana.
+export const MOTIVATION_TIE_REASONS = {};
 
 // Special cases, layer 3: a full advice that replaces the assembly.
 // `emotion` lists emotion groups that trigger it, `motivation` the motivation group.
@@ -83,5 +90,5 @@ export const ENDING_VARIANTS = {
   wiped_out: ['С-4'],
 };
 
-// "Приём дня" (I-47): one shared circle, not tied to emotions. Empty until Yana writes them.
-export const TIP_IDS = [];
+// "Приём дня" is no longer part of the advice (R-38 item 7, R-40, 2026-11-16):
+// it is a separate card on the main screen.
