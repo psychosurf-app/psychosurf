@@ -15,11 +15,13 @@ import { noteCodes } from './noteMatch.js';
 import { POOL } from './pool.js';
 import { dictionaryCode } from '../data/options.js';
 import { sportGroup } from '../data/sports.js';
+import { SERVER_MODE, apiGet } from '../api.js';
 
 // On only in the build with advice (R-39): built with VITE_ADVICE=1 and pool.json.
 // In the public build it stays off, so no advice is "remembered" as read
 // while the person cannot see it (the variant circles would drift).
-export const ADVICE_ENABLED = import.meta.env?.VITE_ADVICE === '1' && POOL !== null;
+// Release 2 (SERVER_MODE): texts come from the server, only what is open.
+export const ADVICE_ENABLED = SERVER_MODE || (import.meta.env?.VITE_ADVICE === '1' && POOL !== null);
 export { POOL };
 
 // Earlier trainings of this person (all sports), oldest first.
@@ -45,11 +47,15 @@ export function withAdvicePick(entry, diary, entries) {
   return { ...entry, advicePick: pick };
 }
 
-// Possible results:
-//   { status: 'locked' }                    - paid feature, not available
-//   { status: 'ok', advice: { id, text } }  - release 2, from the server
-export async function getAdvice(entry) {
-  // Test build: the entry is not used yet. Release 2 sends it to the server.
-  void entry;
-  return { status: 'locked' };
+// Texts for one saved pick: { pool: { pieces, endings }, locked }.
+// Server (release 2): the server sends only what is open for this person and
+// says itself whether the advice is locked (R-37). Test build: the bundled
+// pool.json and the app's own trial check (`access` from access/index.js).
+export async function loadAdviceTexts(pick, today, access) {
+  if (!SERVER_MODE) return { pool: POOL, locked: !access.full };
+  const ids = [...new Set([...pick.advices.map((a) => a.special ?? a.part12), pick.part3].filter(Boolean))];
+  const query = new URLSearchParams({ ids: ids.join(','), today });
+  if (pick.ending) query.set('ending', pick.ending);
+  const { locked, pieces, endings } = await apiGet(`/api/advice?${query}`);
+  return { pool: { pieces, endings }, locked };
 }

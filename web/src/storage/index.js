@@ -12,17 +12,14 @@ import { createKeyValueAdapter } from './keyValueAdapter.js';
 import { createServerAdapter } from './serverAdapter.js';
 import { loadWithMove } from './moveToServer.js';
 import { browserStore } from './browserStore.js';
-import { cloudStorage, isInTelegram, getInitData } from '../telegram.js';
+import { cloudStorage, getInitData } from '../telegram.js';
+import { API_URL, SERVER_MODE } from '../api.js';
 import { isDemo, DEMO_DIARIES, DEMO_ENTRIES } from '../lib/demo.js';
 
 // Format version stamped on every saved record (decision R-33, rule 3).
 // Bump it when the shape of a diary or an entry changes, and teach
 // `upgrade` below how to turn the old shape into the new one.
 export const SCHEMA_VERSION = 1;
-
-// Address of our server, set when building: VITE_API_URL=https://… npm run build.
-// Empty = no server yet, the app works as before.
-const API_URL = import.meta.env?.VITE_API_URL ?? '';
 
 // Where data lives:
 // - inside Telegram with a server address: on our server (release 2); on the
@@ -33,7 +30,7 @@ const API_URL = import.meta.env?.VITE_API_URL ?? '';
 //   mixes with a real user's diary.
 function pickAdapter() {
   if (isDemo) return createMemoryAdapter({ diaries: DEMO_DIARIES, entries: DEMO_ENTRIES });
-  if (API_URL && isInTelegram) {
+  if (SERVER_MODE) {
     const server = createServerAdapter({ apiUrl: API_URL, initData: getInitData() });
     const cloud = cloudStorage && createKeyValueAdapter(cloudStorage);
     return { ...server, load: () => loadWithMove({ server, cloud, store: cloudStorage }) };
