@@ -44,7 +44,53 @@ function Part({ title, blocks }) {
   );
 }
 
-export default function Advice({ diary, entry, pool, onBack, onArticle }) {
+function LockIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="none" stroke="currentColor" strokeWidth="2" />
+      <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" strokeWidth="2" />
+    </svg>
+  );
+}
+
+// A locked part: its title with a lock and grey lines instead of the text (G-29 v1).
+function LockedPart({ title }) {
+  return (
+    <section className="advice-part advice-locked">
+      <h2 className="article-h">
+        <span>{title}</span>
+        <LockIcon />
+      </h2>
+      <span className="skeleton-line" />
+      <span className="skeleton-line" />
+      <span className="skeleton-line short" />
+    </section>
+  );
+}
+
+// Invitation under the locked parts, text approved by Yana (I-46, 2026-11-07).
+function Paywall() {
+  const [note, setNote] = useState(false);
+  return (
+    <div className="paywall">
+      <h2 className="paywall-title">Волну ты уже увидел. Осталось её поймать</h2>
+      <p className="paywall-text">
+        Первая часть подсказала, что происходит. Во второй и третьей — как с этим работать и куда грести дальше.
+        Совет подобран спортивным психологом под твои эмоции, мотивацию и твой спорт.
+      </p>
+      <button type="button" className="paywall-btn" onClick={() => setNote(true)}>
+        Читать совет полностью
+      </button>
+      {/* Payment comes in release 2 (Z-1). Until then the button only says so. */}
+      {note && <p className="paywall-note">Оплата появится к запуску приложения.</p>}
+      <p className="paywall-free">Дневник и графики остаются бесплатными</p>
+    </div>
+  );
+}
+
+// `locked`: after the trial without a subscription (R-37): part 1 and the
+// orange block stay open, parts 2-3 are locked with Yana's invitation (I-46).
+export default function Advice({ diary, entry, pool, locked = false, onBack, onArticle }) {
   const [tab, setTab] = useState(0);
   const view = adviceView(entry, entry.advicePick, pool);
   const current = view.tabs[tab] ?? view.tabs[0];
@@ -78,15 +124,25 @@ export default function Advice({ diary, entry, pool, onBack, onArticle }) {
       <Part title={PART_TITLES.part1} blocks={current.part1} />
       {/* Orange block about a specialist: free, above the lock (I-45, V-46, column N). */}
       {current.flag && <div className="flag-callout">{current.flag}</div>}
-      <Part title={PART_TITLES.part2} blocks={current.part2} />
-      {view.part3 && view.motivationLine && <p className="advice-intro">{view.motivationLine}</p>}
-      <Part title={view.part3Title} blocks={view.part3} />
+      {locked ? (
+        <>
+          <LockedPart title={PART_TITLES.part2} />
+          <LockedPart title={view.part3Title} />
+          <Paywall />
+        </>
+      ) : (
+        <>
+          <Part title={PART_TITLES.part2} blocks={current.part2} />
+          {view.part3 && view.motivationLine && <p className="advice-intro">{view.motivationLine}</p>}
+          <Part title={view.part3Title} blocks={view.part3} />
 
-      {view.finalLine && <p className="advice-final">{view.finalLine}</p>}
+          {view.finalLine && <p className="advice-final">{view.finalLine}</p>}
 
-      {view.articles.map((key) => (
-        <ArticleCard key={key} title={ARTICLE_TITLES[key]} onClick={() => onArticle(key)} />
-      ))}
+          {view.articles.map((key) => (
+            <ArticleCard key={key} title={ARTICLE_TITLES[key]} onClick={() => onArticle(key)} />
+          ))}
+        </>
+      )}
 
       <button type="button" className="btn-primary" onClick={onBack}>
         Вернуться

@@ -2008,3 +2008,72 @@ button.daily-card {
   justify-content: center;
   min-height: 100vh;
 }
+
+/* Advice after the trial: locked parts 2-3 and the invitation (G-29 v1, I-46, R-37) */
+.advice-locked .article-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--hint);
+}
+
+.skeleton-line {
+  display: block;
+  height: 12px;
+  margin: 0 0 10px;
+  border-radius: 6px;
+  background: var(--grid);
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+.paywall {
+  margin: 28px 0 20px;
+  padding: 20px;
+  border-radius: 24px;
+  background: var(--btn);
+  color: var(--btn-text);
+}
+
+.paywall-title {
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.paywall-text {
+  margin: 0 0 18px;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.paywall-btn {
+  width: 100%;
+  padding: 16px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--orange);
+  color: #ffffff;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.paywall-note {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: #f2c94c;
+}
+
+.paywall-free {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: #b7babd;
+}
