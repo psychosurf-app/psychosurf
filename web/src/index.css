@@ -1948,3 +1948,63 @@ button.daily-card {
   font-size: 14px;
   color: var(--hint);
 }
+
+/* "Не получилось сохранить" banner and load error (Z-16) */
+.save-notice {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 20;
+  max-width: 456px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 12px 12px 16px;
+  border-radius: 18px;
+  background: var(--btn);
+  color: var(--btn-text);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.save-notice-text {
+  flex: 1;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.save-notice-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.save-notice-retry {
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--orange);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.save-notice-close {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.load-error {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+}

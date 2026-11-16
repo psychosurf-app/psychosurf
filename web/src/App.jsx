@@ -19,9 +19,8 @@ import { dailyCard } from './daily/index.js';
 import { todayIso } from './lib/format.js';
 import { ADVICE_ENABLED, POOL, withAdvicePick } from './advice/index.js';
 import Advice from './screens/Advice.jsx';
+import { trackSave } from './lib/saveStatus.js';
 
-// Logs a failed save. A visible "could not save" message comes later.
-const reportSaveError = (error) => console.error('Save failed', error);
 
 // Simple screen switcher. A real router comes when there are more screens.
 // Data is loaded and saved only through the storage module (R-33).
@@ -43,9 +42,16 @@ export default function App() {
   const [article, setArticle] = useState('burnout');
   const [articleFrom, setArticleFrom] = useState('diary');
 
-  // Load saved data once at start. Someone with diaries goes straight to the profile.
+  // Load failed: show "try again" instead of the welcome screen. Otherwise a
+  // person with a diary would start from zero, and the first save would
+  // overwrite their real diary with an empty one.
+  const [loadError, setLoadError] = useState(false);
+  const [loadAttempt, setLoadAttempt] = useState(0);
+
+  // Load saved data at start (and on "try again"). Someone with diaries goes straight to the profile.
   useEffect(() => {
     let cancelled = false;
+    setLoadError(false);
     loadUserData()
       .then((data) => {
         if (cancelled) return;
@@ -55,25 +61,28 @@ export default function App() {
         } else {
           const next = { ...data.profile, dailyStart: todayIso() };
           setProfile(next);
-          saveProfile(next).catch(reportSaveError);
+          trackSave(() => saveProfile(next));
         }
         setDiaries(data.diaries);
         setEntries(data.entries);
         if (data.diaries.length > 0) setScreen('profile');
       })
-      .catch((error) => console.error('Load failed', error))
+      .catch((error) => {
+        console.error('Load failed', error);
+        if (!cancelled) setLoadError(true);
+      })
       .finally(() => {
         if (!cancelled) setLoaded(true);
       });
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [loadAttempt]);
 
   // The screen updates at once; saving happens in the background.
   const updateDiaries = useCallback((list) => {
     setDiaries(list);
-    saveDiaries(list).catch(reportSaveError);
+    trackSave(() => saveDiaries(list));
   }, []);
 
   const goWelcome = useCallback(() => setScreen('welcome'), []);
@@ -91,6 +100,19 @@ export default function App() {
 
   // Empty page for the moment while data loads.
   if (!loaded) return null;
+
+  // Texts are drafts until Yana approves them (V-52).
+  if (loadError) {
+    return (
+      <main className="screen load-error">
+        <h1 className="page-title">Не получилось открыть дневник</h1>
+        <p className="section-hint">Проверь интернет и попробуй ещё раз. Твои записи никуда не делись.</p>
+        <button type="button" className="btn-primary" onClick={() => setLoadAttempt((n) => n + 1)}>
+          Попробовать ещё раз
+        </button>
+      </main>
+    );
+  }
 
   if (screen === 'welcome') {
     return <Welcome onStart={goSports} onHowItWorks={() => setScreen('how')} />;
@@ -138,7 +160,7 @@ export default function App() {
           if (profile.dailyOpened === today) return;
           const next = { ...profile, dailyOpened: today };
           setProfile(next);
-          saveProfile(next).catch(reportSaveError);
+          trackSave(() => saveProfile(next));
         }}
         onArticle={(key) => {
           setArticle(key);
@@ -163,7 +185,7 @@ export default function App() {
           // New entry is added; an edited one replaces the old version.
           const next = [...entries.filter((e) => e.id !== entry.id), entry];
           setEntries(next);
-          saveEntry(entry).catch(reportSaveError);
+          trackSave(() => saveEntry(entry));
           setCurrentEntryId(entry.id);
           // The second "nothing" in a row shows the red flag before the training (R-22).
           setScreen(entry.tone === 'numb' && isRedFlag(next) ? 'redflag' : 'training');
@@ -204,13 +226,13 @@ export default function App() {
           }
           if (withPick !== entry) {
             setEntries(entries.map((e) => (e.id === entry.id ? withPick : e)));
-            saveEntry(withPick).catch(reportSaveError);
+            trackSave(() => saveEntry(withPick));
           }
           setScreen('advice');
         }}
         onDelete={() => {
           setEntries(entries.filter((e) => e.id !== currentEntryId));
-          deleteEntry(currentEntryId).catch(reportSaveError);
+          trackSave(() => deleteEntry(currentEntryId));
           setCurrentEntryId(null);
           // Always back to this sport's diary, even if the training was opened from the profile.
           setScreen('diary');
@@ -252,7 +274,7 @@ export default function App() {
         onSaveName={(displayName) => {
           const next = { ...profile, displayName };
           setProfile(next);
-          saveProfile(next).catch(reportSaveError);
+          trackSave(() => saveProfile(next));
           setScreen('profile');
         }}
         onAbout={() => setScreen('about')}
