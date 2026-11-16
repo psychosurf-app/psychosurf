@@ -8,10 +8,29 @@ import * as data from './data.js';
 import { BadRequest, profileInput, diariesInput, entryInput, entryId } from './validate.js';
 
 // botToken: token of @psychosurf_bot, from .env (never in the code).
+// allowedOrigins: addresses of the app allowed to call the server from a
+//   browser (CORS), e.g. https://psychosurf-app.github.io
 // now: clock, replaced in tests.
-export function createApp({ db, botToken, now }) {
+export function createApp({ db, botToken, allowedOrigins = [], now }) {
   const app = express();
   app.disable('x-powered-by');
+
+  // The app lives at another address than the server, so the browser asks
+  // first whether it may call. Only our own app addresses get a yes.
+  app.use((req, res, next) => {
+    const origin = req.get('origin');
+    if (origin && allowedOrigins.includes(origin)) {
+      res.set({
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Methods': 'GET, PUT, DELETE',
+        'Access-Control-Allow-Headers': 'authorization, content-type',
+        'Access-Control-Max-Age': '600',
+        Vary: 'Origin',
+      });
+    }
+    if (req.method === 'OPTIONS') return res.sendStatus(origin && allowedOrigins.includes(origin) ? 204 : 403);
+    next();
+  });
   app.use(express.json({ limit: '100kb' }));
 
   // Is the server alive and can it reach the database? Used by the hosting
