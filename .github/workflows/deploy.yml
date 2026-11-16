@@ -42,6 +42,23 @@ jobs:
         with:
           path: web/dist
 
+  # Server checks (release 2). Tests use PGlite, a PostgreSQL in memory,
+  # so no database service is needed here. Nothing is deployed from this job.
+  server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - run: npm test
+
   deploy:
     if: github.event_name != 'pull_request'
     needs: build

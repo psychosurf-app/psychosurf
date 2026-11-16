@@ -1,0 +1,22 @@
+{
+  "name": "psychosurf-server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Server of Психосерф (release 2): login from Telegram, diaries, advice. Decision R-30.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "migrate": "node src/migrate.js",
+    "test": "node --test \"test/**/*.test.js\""
+  },
+  "dependencies": {
+    "express": "^5.3.0",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.16"
+  }
+}
