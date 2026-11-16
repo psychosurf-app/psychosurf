@@ -92,3 +92,20 @@ export function entryInput(id, body) {
     version: Number.isInteger(body.version) ? body.version : 1,
   };
 }
+
+// The person's local date. Time zones are at most a day away from the server's
+// UTC date, so anything further is refused: no peeking at future cards.
+export function todayInput(v, nowMs) {
+  if (!isDate(v)) fail('today: YYYY-MM-DD');
+  const diff = Math.abs(Date.parse(v) - Date.parse(new Date(nowMs).toISOString().slice(0, 10)));
+  if (diff > 86400000) fail('today: too far from the server date');
+  return v;
+}
+
+// "С-11,С-14.2" -> ['С-11', 'С-14.2'], at most 6 pieces per advice.
+export function adviceIdsInput(v) {
+  if (typeof v !== 'string' || !v) fail('ids');
+  const ids = v.split(',');
+  if (ids.length > 6 || !ids.every((id) => /^С-\d{1,3}(\.\d{1,2})?$/.test(id))) fail('ids: С-… list');
+  return ids;
+}
