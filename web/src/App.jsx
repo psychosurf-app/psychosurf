@@ -15,11 +15,11 @@ import TopBar from './components/TopBar.jsx';
 import Settings from './screens/Settings.jsx';
 import About from './screens/About.jsx';
 import { deleteEntry, loadUserData, saveDiaries, saveEntry, saveProfile } from './storage/index.js';
-import { dailyCard } from './daily/index.js';
+import { useDaily } from './daily/index.js';
 import { currentAccess } from './access/index.js';
 import { todayIso } from './lib/format.js';
-import { ADVICE_ENABLED, POOL, withAdvicePick } from './advice/index.js';
-import Advice from './screens/Advice.jsx';
+import { ADVICE_ENABLED, withAdvicePick } from './advice/index.js';
+import AdviceLoader from './screens/AdviceLoader.jsx';
 import { trackSave } from './lib/saveStatus.js';
 
 
@@ -48,6 +48,9 @@ export default function App() {
   // overwrite their real diary with an empty one.
   const [loadError, setLoadError] = useState(false);
   const [loadAttempt, setLoadAttempt] = useState(0);
+
+  // "Приём дня" card for the main screen (R-40), from the server in release 2.
+  const daily = useDaily(profile, entries, todayIso());
 
   // Load saved data at start (and on "try again"). Someone with diaries goes straight to the profile.
   useEffect(() => {
@@ -157,7 +160,7 @@ export default function App() {
           setScreen('sports');
         }}
         onCompare={() => setScreen('compare')}
-        daily={dailyCard(profile, todayIso(), currentAccess(profile, entries, todayIso()))}
+        daily={daily}
         onDailyOpen={() => {
           const today = todayIso();
           if (profile.dailyOpened === today) return;
@@ -307,11 +310,11 @@ export default function App() {
     const entry = entries.find((e) => e.id === currentEntryId);
     if (entry?.advicePick) {
       return (
-        <Advice
+        <AdviceLoader
           diary={currentDiary}
           entry={entry}
-          pool={POOL}
-          locked={!currentAccess(profile, entries, todayIso()).full}
+          today={todayIso()}
+          access={currentAccess(profile, entries, todayIso())}
           onBack={() => setScreen('training')}
           onArticle={(key) => {
             setArticle(key);

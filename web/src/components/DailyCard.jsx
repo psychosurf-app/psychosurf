@@ -46,6 +46,9 @@ function DailySheet({ card, onClose }) {
 export default function DailyCard({ daily, onOpen }) {
   const [open, setOpen] = useState(false);
 
+  // Still loading from the server (or it can't be reached): no card for now.
+  if (!daily) return null;
+
   if (daily.locked) {
     return (
       <div className="daily-card daily-locked">

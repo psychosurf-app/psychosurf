@@ -7,11 +7,13 @@
 
 import { ADVICE_ENABLED } from '../advice/index.js';
 import { accessState } from './trial.js';
+import { SERVER_MODE } from '../api.js';
 
 const PREVIEW_AFTER_TRIAL =
   typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('after-trial');
 
-const TESTERS_FREE = ADVICE_ENABLED;
+// Only the test build decides here; with the server, the server decides (R-37).
+const TESTERS_FREE = ADVICE_ENABLED && !SERVER_MODE;
 
 export function currentAccess(profile, entries, today) {
   if (PREVIEW_AFTER_TRIAL) return { full: false, trial: false, subscribed: false };
