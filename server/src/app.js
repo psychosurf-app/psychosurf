@@ -2,8 +2,12 @@
 // so tests can give it an in-memory one and production a real PostgreSQL.
 
 import express from 'express';
+import { requireTelegramUser } from './auth.js';
+import { getProfile } from './users.js';
 
-export function createApp({ db }) {
+// botToken: token of @psychosurf_bot, from .env (never in the code).
+// now: clock, replaced in tests.
+export function createApp({ db, botToken, now }) {
   const app = express();
   app.disable('x-powered-by');
   app.use(express.json({ limit: '100kb' }));
@@ -17,6 +21,14 @@ export function createApp({ db }) {
     } catch {
       res.status(503).json({ ok: false, db: false });
     }
+  });
+
+  // Everything below needs a person logged in through Telegram.
+  app.use('/api', requireTelegramUser({ db, botToken, now }));
+
+  // Who am I: our user id is never sent, only what the screens need.
+  app.get('/api/me', async (req, res) => {
+    res.json({ isNew: req.isNewUser, profile: await getProfile(db, req.userId) });
   });
 
   app.use('/api', (req, res) => res.status(404).json({ error: 'not_found' }));
