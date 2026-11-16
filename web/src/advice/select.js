@@ -22,7 +22,6 @@ import {
   SPECIAL_CASES,
   GOOD_WITH_HARD_ID,
   ENDING_VARIANTS,
-  TIP_IDS,
 } from './catalog.js';
 
 const groupOfOption = (groups) =>
@@ -162,7 +161,6 @@ export function selectAdvice(entry, sportGroup, history = [], noteCodes = []) {
       ? null
       : take(`mot:${motivationGroup.id}`, motivationGroup.variants);
   const ending = take(`end:${bag}:${sportGroup}`, ENDING_VARIANTS[bag] ?? []);
-  const tip = take('tip', TIP_IDS);
 
   return {
     version: 1,
@@ -172,7 +170,6 @@ export function selectAdvice(entry, sportGroup, history = [], noteCodes = []) {
     bag,
     sportGroup,
     ending,
-    tip,
     lineType,
     slots,
   };
