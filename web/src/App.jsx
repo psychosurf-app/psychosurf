@@ -104,12 +104,12 @@ export default function App() {
   // Empty page for the moment while data loads.
   if (!loaded) return null;
 
-  // Texts are drafts until Yana approves them (V-52).
+  // Texts approved by Yana (V-52, 2026-11-16).
   if (loadError) {
     return (
       <main className="screen load-error">
         <h1 className="page-title">Не получилось открыть дневник</h1>
-        <p className="section-hint">Проверь интернет и попробуй ещё раз. Твои записи никуда не делись.</p>
+        <p className="section-hint">Проверь интернет-соединение и попробуй ещё раз. Твои записи никуда не делись.</p>
         <button type="button" className="btn-primary" onClick={() => {
             setLoadError(false);
             setLoadAttempt((n) => n + 1);

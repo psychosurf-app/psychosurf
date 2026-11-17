@@ -41,7 +41,7 @@ export default function AdviceLoader({ diary, entry, today, access, onBack, onAr
       ) : (
         <>
           <h1 className="page-title">Не получилось загрузить совет</h1>
-          <p className="section-hint">Проверь интернет и попробуй ещё раз.</p>
+          <p className="section-hint">Проверь интернет-соединение и попробуй ещё раз.</p>
           <button
             type="button"
             className="btn-primary"

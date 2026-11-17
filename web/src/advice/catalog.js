@@ -13,11 +13,11 @@
 // `name`: what the user sees (I-50); ids stay internal.
 export const EMOTION_GROUPS = [
   { id: 'empty', name: 'Пустота', tone: 'hard', rank: 1,
-    options: ['Сл-24', 'Сл-25'], variants: ['С-6'] },
+    options: ['Сл-24', 'Сл-25'], variants: ['С-6', 'С-6.2', 'С-6.3'] },
   { id: 'fear', name: 'Страх и тревога', tone: 'hard', rank: 2,
-    options: ['Сл-29', 'Сл-30', 'Сл-33'], variants: ['С-9'] },
+    options: ['Сл-29', 'Сл-30', 'Сл-33'], variants: ['С-9', 'С-9.2', 'С-9.3'] },
   { id: 'anger', name: 'Злость и раздражение', tone: 'hard', rank: 3,
-    options: ['Сл-34', 'Сл-35', 'Сл-38', 'Сл-39'], variants: ['С-10'] },
+    options: ['Сл-34', 'Сл-35', 'Сл-38', 'Сл-39'], variants: ['С-10', 'С-10.2', 'С-10.3'] },
   { id: 'selfcrit', name: 'Самокритика', tone: 'hard', rank: 4,
     options: ['Сл-28', 'Сл-31', 'Сл-32', 'Сл-36'], variants: ['С-8'] },
   { id: 'tired', name: 'Усталость', tone: 'hard', rank: 5,
@@ -56,13 +56,19 @@ export const MOTIVATION_GROUPS = [
   { id: 'boredom', name: 'Скука', sign: 'not_forward', rank: 6,
     options: ['Сл-50', 'Сл-51', 'Сл-55'], variants: ['С-17', 'С-17.2', 'С-17.3'] },
   { id: 'ceiling', name: 'Потолок', sign: 'not_forward', rank: 7,
-    options: ['Сл-58', 'Сл-59'], variants: ['С-20'] },
+    options: ['Сл-58', 'Сл-59'], variants: ['С-20', 'С-20.2', 'С-20.3'] },
 ];
 
-// Why this group is talked about when two motivation groups tie (I-51, part 2).
-// Only lines approved by Yana go here (R-8). Empty for now: the drafts for
-// Долг and Хочу бросить are still being finished with Yana.
-export const MOTIVATION_TIE_REASONS = {};
+// Why this group is talked about when two motivation groups tie (I-51, item 2).
+// Approved by Yana (2026-11-13 and 2026-11-16, V-54). Интерес and Потолок need
+// none: they are last in the order, so they never win a tie.
+export const MOTIVATION_TIE_REASONS = {
+  duty: 'этот настрой сильнее всего влияет на то, с каким чувством ты придёшь на следующую тренировку',
+  goal: 'цель задаёт направление, а интерес помогает по нему идти',
+  quit: 'это самый громкий сигнал, и его важно услышать первым',
+  reluctant: 'этот настрой сильнее всего мешает дойти до следующей тренировки',
+  boredom: 'скука часто приходит раньше, и если вовремя её заметить, до ощущения потолка может и не дойти',
+};
 
 // Special cases, layer 3: a full advice that replaces the assembly.
 // `emotion` lists emotion groups that trigger it, `motivation` the motivation group.
@@ -82,12 +88,14 @@ export const SPECIAL_CASES = [
 export const GOOD_WITH_HARD_ID = 'С-27';
 
 // Part-3 heading + final line, per bag and sport group (column M of the base advice).
-// One ending per pair for now; extra variants of final lines go after the base id.
+// Base first, then Yana's extra final lines (I-47, approved 2026-11-16) in a
+// circle (R-38 item 4). The heading stays the same in all variants.
+// In pool.json the extra lines are ids like 'С-1.2' (tools/build_pool.py).
 export const ENDING_VARIANTS = {
-  catch_wave: ['С-1'],
-  sunbathing: ['С-3'],
-  paddling: ['С-2'],
-  wiped_out: ['С-4'],
+  catch_wave: ['С-1', 'С-1.2', 'С-1.3', 'С-1.4', 'С-1.5'],
+  sunbathing: ['С-3', 'С-3.2', 'С-3.3'],
+  paddling: ['С-2', 'С-2.2', 'С-2.3'],
+  wiped_out: ['С-4', 'С-4.2', 'С-4.3'],
 };
 
 // "Приём дня" is no longer part of the advice (R-38 item 7, R-40, 2026-11-16):
