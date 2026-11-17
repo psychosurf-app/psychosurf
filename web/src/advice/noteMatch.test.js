@@ -19,10 +19,18 @@ test('phrases and the option label itself', () => {
   assert.ok(noteCodes('ВСЁ РАВНО было').includes('Сл-24'));
 });
 
-test('words shared by two groups are skipped', () => {
-  assert.ok(SKIPPED_SHARED.includes('обидно'));
-  assert.ok(SKIPPED_SHARED.includes('бесит'));
-  assert.deepEqual(noteCodes('обидно'), []);
+test('no word is shared by two groups after V-51', () => {
+  assert.deepEqual(SKIPPED_SHARED, []);
+});
+
+test('V-51: "бесит" is Злость, "обидно" is Разочарование', () => {
+  assert.deepEqual(noteCodes('бесит'), ['Сл-39']);
+  assert.deepEqual(noteCodes('обидно').sort(), ['Сл-26', 'Сл-27']);
+});
+
+test('a longer phrase takes its words: "бесит, что не получается" is only Самокритика', () => {
+  assert.deepEqual(noteCodes('Бесит, что не получается'), ['Сл-31']);
+  assert.deepEqual(noteCodes('бесит, что не получается, и вообще бесит всё').sort(), ['Сл-31', 'Сл-39']);
 });
 
 test('empty note', () => {

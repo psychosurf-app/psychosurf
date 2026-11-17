@@ -43,14 +43,20 @@ function countByGroup(codes, groupOf) {
   return counts;
 }
 
-// Group with the most marks; ties by rank, rotating away from `lastId`.
-function pickGroup(counts, lastId) {
-  if (counts.size === 0) return null;
+// Groups that share the most marks, in Yana's order (rank).
+function topGroups(counts) {
+  if (counts.size === 0) return [];
   const max = Math.max(...counts.values());
-  const tied = [...counts.entries()]
+  return [...counts.entries()]
     .filter(([, n]) => n === max)
     .map(([g]) => g)
     .sort((a, b) => a.rank - b.rank);
+}
+
+// Group with the most marks; ties by rank, rotating away from `lastId`.
+function pickGroup(counts, lastId) {
+  const tied = topGroups(counts);
+  if (tied.length === 0) return null;
   if (tied.length > 1 && tied[0].id === lastId) return tied[1];
   return tied[0];
 }
@@ -111,19 +117,29 @@ export function selectAdvice(entry, sportGroup, history = [], noteCodes = []) {
   };
 
   // Motivation group (part 3): from options of the chosen sign.
-  const motivationGroup = pickGroup(
-    countByGroup(
-      (entry.motivationOptions ?? []).filter(
-        (c) => MOTIVATION_GROUP_OF[c]?.sign === entry.motivation,
-      ),
-      MOTIVATION_GROUP_OF,
+  const motivationCounts = countByGroup(
+    (entry.motivationOptions ?? []).filter(
+      (c) => MOTIVATION_GROUP_OF[c]?.sign === entry.motivation,
     ),
-    null,
+    MOTIVATION_GROUP_OF,
   );
+  const motivationGroup = pickGroup(motivationCounts, null);
+  // Groups that tied for part 3, in Yana's order (line I-51, item 2).
+  const motivationTied = topGroups(motivationCounts).map((g) => g.id);
 
   const advices = tones.map((tone) => {
-    const group = pickGroup(tone === 'good' ? good : hard, lastGroupOfTone(history, tone));
-    return { tone, group: group.id, groupName: group.name, part12: null, special: null };
+    const counts = tone === 'good' ? good : hard;
+    const group = pickGroup(counts, lastGroupOfTone(history, tone));
+    // Groups of this tone that tied, in Yana's order (line I-50, item 4).
+    const tied = topGroups(counts).map((g) => g.id);
+    return {
+      tone,
+      group: group.id,
+      groupName: group.name,
+      tied: tied.length > 1 ? tied : null,
+      part12: null,
+      special: null,
+    };
   });
 
   let bag = entry.tone === 'good' ? goodBag(entry.motivation) : hardBag(entry.motivation);
@@ -166,6 +182,7 @@ export function selectAdvice(entry, sportGroup, history = [], noteCodes = []) {
     version: 1,
     advices,
     motivationGroup: motivationGroup?.id ?? null,
+    motivationTied: motivationTied.length > 1 ? motivationTied : null,
     part3,
     bag,
     sportGroup,

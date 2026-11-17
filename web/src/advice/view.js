@@ -2,7 +2,7 @@
 // No texts are written here: everything comes from Yana's pool or her
 // approved line templates (I-50). Nothing is generated (R-8).
 
-import { EMOTION_GROUPS, MOTIVATION_GROUPS, MOTIVATION_TIE_REASONS } from './catalog.js';
+import { EMOTION_GROUPS, MOTIVATION_GROUPS, MOTIVATION_TIE_REASONS, SPECIAL_CASES } from './catalog.js';
 import { OPTION_BY_CODE, dictionaryCode } from '../data/options.js';
 
 export const PART_TITLES = { part1: 'Что происходит', part2: 'На что обратить внимание' };
@@ -57,8 +57,11 @@ function marked(entry) {
   };
 }
 
-// The small line above the advice (I-50, texts approved by Yana 2026-11-10).
-// Returns null where Yana has no line yet (other special cases, group only from a note).
+const motivationOptionsOf = (entry, groupId) =>
+  (entry.motivationOptions ?? []).filter((c) => motivationGroupOfCode[c]?.id === groupId);
+
+// The small line above the advice (I-50, texts approved by Yana 2026-11-10 and 2026-11-16).
+// Returns null where Yana has no line (group only from a note).
 export function introLine(entry, pick) {
   const m = marked(entry);
   const first = pick.advices[0];
@@ -68,8 +71,21 @@ export function introLine(entry, pick) {
   if (pick.lineType === 'good_with_hard') {
     return `Ты отметил ${listEmotions(m.good)}, но в «Было и другое» добавил ${listEmotions(m.hard)}. Тренировка прошла хорошо, а рядом было и что-то тяжёлое. Этот совет — о таком сочетании.`;
   }
-  if (first.special) return null;
+  if (first.special) {
+    // I-50 item 5: special cases С-21 … С-29 except С-27 (emotion + motivation).
+    const special = SPECIAL_CASES.find((sc) => sc.id === first.special);
+    const emotions = first.tone === 'good' ? m.good : m.hard;
+    const options = special ? motivationOptionsOf(entry, special.motivation) : [];
+    if (!emotions.length || !options.length) return null;
+    return `Ты отметил ${listEmotions(emotions)} и в мотивации ${listMotivation(options)}. Такие чувства и настрой влияют друг на друга и вместе говорят больше, чем по отдельности. Поэтому сегодня совет — про это сочетание.`;
+  }
   const name = groupById[first.group].name;
+  // I-50 item 4: two groups of one tone tied. Approved only for two groups;
+  // with three or more the usual line stays.
+  if (pick.lineType === 'single' && first.tied?.length === 2) {
+    const [a, b] = first.tied.map((id) => groupById[id].name);
+    return `Сегодня твои чувства поровну разделились между двумя состояниями — «${a}» и «${b}». Поговорим про «${name}»: это состояние сейчас важнее разобрать первым.`;
+  }
   if (pick.lineType === 'mixed') {
     const main = first.tone === 'good' ? m.good : m.hard;
     const rest = first.tone === 'good' ? m.hard : m.good;
@@ -85,27 +101,37 @@ const motivationGroupOfCode = Object.fromEntries(
   MOTIVATION_GROUPS.flatMap((g) => g.options.map((c) => [c, g])),
 );
 
-// The small line above part 3 (I-51, texts approved by Yana 2026-11-13).
-// Shown whenever part 3 comes from a motivation group. On a tie between two
-// groups Yana adds a reason why we talk about this one; until her reason for
-// that group is approved, the line names only the options of the chosen group.
+// Picks saved before 2026-11-17 have no `motivationTied`: count it from the entry.
+function tiedFromEntry(entry) {
+  const counts = new Map();
+  for (const c of entry.motivationOptions ?? []) {
+    const g = motivationGroupOfCode[c];
+    if (g?.sign === entry.motivation) counts.set(g, (counts.get(g) ?? 0) + 1);
+  }
+  if (counts.size === 0) return [];
+  const max = Math.max(...counts.values());
+  return [...counts].filter(([, n]) => n === max).map(([g]) => g).sort((a, b) => a.rank - b.rank).map((g) => g.id);
+}
+
+// The small line above part 3 (I-51, texts approved by Yana 2026-11-13 and 2026-11-16).
+// Shown whenever part 3 comes from a motivation group.
+// One group: names the marked options. Two groups tied: names the two groups
+// and Yana's reason, without the options (item 2). Three or more tied, or no
+// approved reason: the one-group line with options of the chosen group only.
 export function motivationLine(entry, pick) {
   const group = motivationGroupById[pick.motivationGroup];
   if (!group || !pick.part3) return null;
+  const tied = pick.motivationTied ?? (pick.motivationTied === undefined ? tiedFromEntry(entry) : []);
+  const reason = MOTIVATION_TIE_REASONS[group.id];
+  if (tied.length === 2 && reason) {
+    const [a, b] = tied.map((id) => motivationGroupById[id].name);
+    return `Сегодня твои отметки про мотивацию поровну разделились между двумя настроями — «${a}» и «${b}». Поговорим про «${group.name}»: ${reason}.`;
+  }
   const options = (entry.motivationOptions ?? []).filter(
     (c) => motivationGroupOfCode[c]?.sign === entry.motivation,
   );
-  const counts = new Map();
-  for (const c of options) {
-    const g = motivationGroupOfCode[c];
-    counts.set(g.id, (counts.get(g.id) ?? 0) + 1);
-  }
-  const max = Math.max(...counts.values());
-  const tie = [...counts.values()].filter((n) => n === max).length > 1;
-  const reason = MOTIVATION_TIE_REASONS[group.id];
-  const shown = tie && !reason ? options.filter((c) => motivationGroupOfCode[c].id === group.id) : options;
-  const line = `Про мотивацию ты отметил ${listMotivation(shown)}. Такой настрой мы называем «${group.name}».`;
-  return tie && reason ? `${line} Сегодня поговорим про «${group.name}»: ${reason}` : line;
+  const shown = tied.length > 1 ? motivationOptionsOf(entry, group.id) : options;
+  return `Про мотивацию ты отметил ${listMotivation(shown)}. Такой настрой мы называем «${group.name}».`;
 }
 
 // Everything the screen needs, read from the pool by ids.

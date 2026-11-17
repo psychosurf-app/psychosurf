@@ -142,20 +142,22 @@ test('line above part 3 (I-51)', async () => {
       (await import('../data/options.js')).OPTION_BY_CODE['Сл-57'].label.toLowerCase() +
       '». Такой настрой мы называем «Хочу бросить».',
   );
-  // tie without an approved reason: only the options of the chosen group
+  // tie of two groups: Yana's line with both groups and the reason (V-54)
   const tie = entry({ emotions: ['Сл-1'], motivationOptions: ['Сл-43', 'Сл-49'] });
   assert.equal(
     motivationLine(tie, selectAdvice(tie, 'water')),
-    'Про мотивацию ты отметил «обязан продолжать ради цели». Такой настрой мы называем «Долг».',
+    'Сегодня твои отметки про мотивацию поровну разделились между двумя настроями — «Долг» и «Интерес». Поговорим про «Долг»: этот настрой сильнее всего влияет на то, с каким чувством ты придёшь на следующую тренировку.',
   );
 });
 
 test('every variant id in the catalog exists in the pool, if the pool is here', async () => {
   const { POOL } = await import('./pool.js').catch(() => ({ POOL: null }));
   if (!POOL) return;
-  const { EMOTION_GROUPS: E, MOTIVATION_GROUPS: M } = await import('./catalog.js');
+  const { EMOTION_GROUPS: E, MOTIVATION_GROUPS: M, ENDING_VARIANTS } = await import('./catalog.js');
   const missing = [...E, ...M].flatMap((g) => g.variants).filter((id) => !POOL.pieces[id]);
   assert.deepEqual(missing, []);
+  const missingEndings = Object.values(ENDING_VARIANTS).flat().filter((id) => !POOL.endings[id]);
+  assert.deepEqual(missingEndings, []);
 });
 
 test('a word in the note decides a tie inside the tone (R-38)', async () => {

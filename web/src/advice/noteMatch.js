@@ -7,8 +7,10 @@
 // - words of 3 letters or less must match exactly ("эх", "не то");
 // - short stems take only a short ending: "вялый" finds "вялая", "мало" not "малыш";
 // - "не …" right before a word cancels it: "не устала" is not "устал";
-// - a phrase that Yana put under two different groups ("обидно", "бесит") is
-//   skipped, so a note never pushes the advice to the wrong group.
+// - a phrase that Yana put under two different groups is skipped, so a note
+//   never pushes the advice to the wrong group;
+// - longer phrases go first and take their words: "бесит, что не получается"
+//   (Самокритика) is one phrase, its "бесит" does not count for Злость too.
 
 import { NOTE_WORDS } from '../data/noteWords.js';
 import { OPTION_BY_CODE } from '../data/options.js';
@@ -57,7 +59,8 @@ function buildPhrases() {
     const words = key.split(' ');
     phrases.push({ words: words.map(stem), negated: words[0] === 'не', codes: [...codes] });
   }
-  return phrases;
+  // Longest first, so a phrase wins over a single word inside it.
+  return phrases.sort((a, b) => b.words.length - a.words.length);
 }
 
 const PHRASES = buildPhrases();
@@ -69,12 +72,16 @@ const PHRASES = buildPhrases();
 export function noteCodes(note) {
   const tokens = normalize(note).split(' ').filter(Boolean);
   const found = new Set();
+  const taken = new Set(); // token positions already used by a longer phrase
   for (const p of PHRASES) {
     for (let i = 0; i + p.words.length <= tokens.length; i++) {
+      const span = p.words.map((_, k) => i + k);
+      if (span.some((t) => taken.has(t))) continue;
       if (!p.words.every((s, k) => matchesWord(tokens[i + k], s))) continue;
       const before = tokens[i - 1];
       if (!p.negated && (before === 'не' || before === 'ни')) continue;
       p.codes.forEach((c) => found.add(c));
+      span.forEach((t) => taken.add(t));
       break;
     }
   }
